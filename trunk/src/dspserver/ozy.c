@@ -219,7 +219,7 @@ void* iq_thread(void* arg) {
             txfwd = buffer.adc[0];
             txref = buffer.adc[1];
 
-            if(ozy_debug) {
+            if (ozy_debug) {
                 fprintf(stderr,"rcvd UDP packet: sequence=%lld offset=%d length=%d\n",
                         buffer.sequence, buffer.offset, buffer.length);
             }
@@ -252,10 +252,11 @@ void* iq_thread(void* arg) {
             exit(1);
         }
 #endif
-
+//       printf("Audio: %2.6f %2.6f %2.6f %2.6f\n", input_buffer[0], input_buffer[4], input_buffer[BUFFER_SIZE+8], input_buffer[BUFFER_SIZE+12]); 
         Audio_Callback (input_buffer,&input_buffer[BUFFER_SIZE],
                         output_buffer,&output_buffer[BUFFER_SIZE], buffer_size, 0);
 
+ 
         // process the output with resampler
         int rc;
         int j, i;
@@ -315,20 +316,21 @@ void* iq_thread(void* arg) {
     } // end while
 }
 
-void ozy_send(unsigned char* data,int length,char* who) {
+void ozy_send(unsigned char* data, int length, char* who) {
     static unsigned long tx_sequence = 0;
-    BUFFER buffer;
-    unsigned short offset=0;
-    int rc;
+    BUFFER               buffer;
+    unsigned short       offset = 0;
+    int                  rc;
 
     //fprintf(stderr,"ozy_send: %s\n",who);
     sem_wait(&ozy_send_semaphore);
 #ifdef SMALL_PACKETS
     if (sdr1000)  // added by KD0OSS
     {  // Use large packets here to help prevent audio buffer underruns with sdr-1000 server
-        int bytes_written=sendto(audio_socket,data,length,0,(struct sockaddr *)&server_audio_addr,server_audio_length);
-        if(bytes_written<0) {
-            fprintf(stderr,"sendto audio failed: %d audio_socket=%d\n",bytes_written,audio_socket);
+        int bytes_written = sendto(audio_socket, data,length, 0, (struct sockaddr *)&server_audio_addr, server_audio_length);
+        if (bytes_written < 0) 
+        {
+            fprintf(stderr,"sendto audio failed: %d audio_socket=%d\n", bytes_written,audio_socket);
             exit(1);
         }
         sem_post(&ozy_send_semaphore);
@@ -338,31 +340,31 @@ void ozy_send(unsigned char* data,int length,char* who) {
     //     8 bytes sequency number
     //     2 byte offset
     //     2 byte length
-    offset=0;
-    while(offset<length) {
+    offset = 0;
+    while (offset < length) {
         buffer.sequence=tx_sequence;
 #ifndef __linux__
         buffer.sequenceHi = 0L;
 #endif
         buffer.offset=offset;
         buffer.length=length-offset;
-        if(buffer.length>500) buffer.length=500;
+        if (buffer.length > 500) buffer.length = 500;
      //   fprintf(stderr,"ozy_send: %d:%lld:%d:%d\n",length,buffer.sequence,buffer.offset,buffer.length);
         memcpy((char*)&buffer.data[0],(char*)&data[offset],buffer.length);
-        rc=sendto(audio_socket,(char*)&buffer,sizeof(buffer),0,(struct sockaddr*)&server_audio_addr,server_audio_length);
-        if(rc<=0) {
+        rc = sendto(audio_socket, (char*)&buffer, sizeof(buffer), 0, (struct sockaddr*)&server_audio_addr, server_audio_length);
+        if (rc <= 0) {
             fprintf(stderr,"sendto audio (SMALL_PACKETS) failed: %d audio_socket=%d errno=%d\n",rc,audio_socket,errno);
             fprintf(stderr,"audio port is %d\n",ntohs(server_audio_addr.sin_port));
             perror("sendto failed for audio data");
             exit(1);
         }
-        offset+=buffer.length;
+        offset += buffer.length;
     }
     tx_sequence++;
 
 #else
-    int bytes_written=sendto(audio_socket,data,length,0,(struct sockaddr *)&server_audio_addr,server_audio_length);
-    if(bytes_written<0) {
+    int bytes_written = sendto(audio_socket, data, length, 0, (struct sockaddr *)&server_audio_addr, server_audio_length);
+    if (bytes_written < 0) {
         fprintf(stderr,"sendto audio failed: %d audio_socket=%d\n",bytes_written,audio_socket);
         exit(1);
     }

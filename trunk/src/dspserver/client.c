@@ -118,6 +118,9 @@ static int samples_per_frame, bits_per_frame;
 #define MIC_BUFFER_SIZE  (BITS_SIZE*MIC_NO_OF_FRAMES)
 #define MIC_ALAW_BUFFER_SIZE 58
 
+#define true  1
+#define false 0
+
 #if MIC_BUFFER_SIZE > MIC_ALAW_BUFFER_SIZE
 static unsigned char mic_buffer[MIC_BUFFER_SIZE];
 #else
@@ -624,8 +627,8 @@ void *tx_thread(void *arg){
                     tx_buffer_counter++;
                     if (tx_buffer_counter >= TX_BUFFER_SIZE && mox){ // KD0OSS added AND mox
                         //      fwrite((float*)&tx_buffer, sizeof(float), tx_buffer_counter, fp);  //KD0OSS
+                        memset(tx_IQ_buffer, 0, sizeof(tx_IQ_buffer));
                         if (hpsdr && !hpsdr_local) {
-                            memset (tx_IQ_buffer, 0, sizeof(tx_IQ_buffer));
                             // use DttSP to process Mic data into tx IQ
                             Audio_Callback(tx_buffer, &tx_buffer[TX_BUFFER_SIZE], &tx_IQ_buffer[TX_BUFFER_SIZE*2], &tx_IQ_buffer[TX_BUFFER_SIZE*3], TX_BUFFER_SIZE, 1);
                         } else if (!hpsdr) {
@@ -634,7 +637,7 @@ void *tx_thread(void *arg){
                             //                       Audio_Callback2(tx_buffer, tx_IQ_buffer, TX_BUFFER_SIZE);
                         }
                         // send Tx IQ to server, buffer is non-interleaved.
-                        ozy_send((unsigned char *)tx_IQ_buffer,sizeof(tx_IQ_buffer),"client");
+                        ozy_send((unsigned char *)tx_IQ_buffer, sizeof(tx_IQ_buffer), "client");
                         tx_buffer_counter = 0;
                     }
                 } // end for i
@@ -1786,6 +1789,9 @@ void readcb(struct bufferevent *bev, void *ctx){
                 goto badcommand;
             if (strcmp(tokens[0],"on")==0) {
                 if (txcfg == TXALL){
+                    FlushAllBufs(0, false);
+                    FlushAllBufs(1, true);
+                    SetThreadProcessingMode(1, 2);
                     ozySetMox(1);
                 }else if(txcfg == TXPASSWD){
                     if (ntok == 3) {
@@ -1796,6 +1802,9 @@ void readcb(struct bufferevent *bev, void *ctx){
                             if (chkFreq(thisuser,  lastFreq , lastMode) == 0){
                                 //freqchk passwd good to tx
                                 sdr_log(SDR_LOG_INFO,"Mox on from User:%s\n",thisuser);
+                                FlushAllBufs(0, false);
+                                FlushAllBufs(1, true);
+                                SetThreadProcessingMode(1, 2);
                                 ozySetMox(1);
                             }else{
                                 sdr_log(SDR_LOG_INFO,"Mox denied because user %s has no rule for mode %d on %lld! hz\n",thisuser, lastMode,lastFreq);
@@ -1812,6 +1821,10 @@ void readcb(struct bufferevent *bev, void *ctx){
             } else if(strcmp(tokens[0],"off")==0) {
                 if (txcfg == TXALL){
                     ozySetMox(0);
+                    SetThreadProcessingMode(1, 0);
+                    FlushAllBufs(1, true);
+                    FlushAllBufs(0, false);
+                    SetThreadProcessingMode(0, 2);
                 }else if(txcfg == TXPASSWD){
                     if (ntok == 3) {
                         char *thisuser = tokens[1];
@@ -1819,6 +1832,10 @@ void readcb(struct bufferevent *bev, void *ctx){
                         if(chkPasswd(thisuser, thispasswd) == 0){
                             sdr_log(SDR_LOG_INFO,"Mox off from User:%s\n",thisuser);
                             ozySetMox(0);
+                            SetThreadProcessingMode(1, 0);
+                            FlushAllBufs(1, true);
+                            FlushAllBufs(0, false);
+                            SetThreadProcessingMode(0, 2);
                         }else{
                             sdr_log(SDR_LOG_INFO,"Mox off denied because user %s password check failed!\n",thisuser);
                         }
