@@ -106,6 +106,7 @@ Configure::Configure() {
     widget.rxDCBlockCheckBox->setChecked(false);  //KD0OSS
     widget.txDCBlockCheckBox->setChecked(false);  //KD0OSS
     widget.windowComboBox->setCurrentIndex(11);  //KD0OSS
+    widget.pttKeyEdit->setText("None");  // KD0OSS
 
     connect(widget.spectrumHighSpinBox,SIGNAL(valueChanged(int)),this,SLOT(slotSpectrumHighChanged(int)));
     connect(widget.spectrumLowSpinBox,SIGNAL(valueChanged(int)),this,SLOT(slotSpectrumLowChanged(int)));
@@ -154,6 +155,8 @@ Configure::Configure() {
     connect(widget.alcAttackSpinBox,SIGNAL(valueChanged(int)),this,SLOT(onAlcAttackChanged(int))); //KD0OSS
     connect(widget.alcDecaySpinBox,SIGNAL(valueChanged(int)),this,SLOT(onAlcDecayChanged(int))); //KD0OSS
     connect(widget.alcHangSpinBox,SIGNAL(valueChanged(int)),this,SLOT(onAlcHangChanged(int))); //KD0OSS
+
+    connect(widget.pttKeySetButton, SIGNAL(toggled(bool)), this, SLOT(setPTTKey(bool))); // KD0OSS
 /*
     connect(widget.nbTransitionSpinBox,SIGNAL(valueChanged(double)),this,SLOT(onNbTransitionChanged(double))); //KD0OSS
     connect(widget.nbLeadSpinBox,SIGNAL(valueChanged(double)),this,SLOT(onNbLeadChanged(double))); //KD0OSS
@@ -350,6 +353,8 @@ void Configure::loadSettings(QSettings* settings) {
     settings->beginGroup("TxSettings");
     widget.allowTx->setChecked(settings->value("allowTx",FALSE).toBool());
     widget.txDCBlockCheckBox->setChecked(settings->value("txDCBlock",FALSE).toBool());  //KD0OSS
+    widget.pttKeyEdit->setText(settings->value("pttKeyText", "None").toString());
+    pttKeyId = settings->value("pttKeyId", 0).toUInt();
     settings->endGroup();
 
     settings->beginGroup("TxIQimage");  //KD0OSS
@@ -468,6 +473,8 @@ void Configure::saveSettings(QSettings* settings) {
     settings->beginGroup("TxSettings");
     settings->setValue("allowTx",widget.allowTx->checkState());
     settings->setValue("txDCBlock",widget.txDCBlockCheckBox->checkState());  //KD0OSS
+    settings->setValue("pttKeyId", pttKeyId); //KD0OSS
+    settings->setValue("pttKeyText", widget.pttKeyEdit->text());
     settings->endGroup();
     settings->beginGroup("TxIQimage"); // KD0OSS
     settings->setValue("TxIQPhaseCorrect",widget.txIQPhaseSpinBox->value());
@@ -1162,3 +1169,54 @@ void Configure::onAlcHangChanged(int arg1) // KD0OSS
     emit alcHangChanged(arg1);
 }
 
+void Configure::setPTTKey(bool enabled) // KD0OSS
+{
+    capturePTTKey = enabled;
+}
+
+void Configure::keyReleaseEvent(QKeyEvent *event) // KD0OSS
+{
+    QString key;
+
+    if (capturePTTKey)
+    {
+        pttKeyId = event->nativeVirtualKey();
+        key = event->text();
+        if (pttKeyId == 0xffe4) key = "R-CTRL";
+        if (pttKeyId == 0xffea) key = "R-ALT";
+        if (pttKeyId == 0xffe3) key = "L-CTRL";
+        if (pttKeyId == 0xffe9) key = "L-ALT";
+        if (pttKeyId == 0xffe2) key = "R-SHFT";
+        if (pttKeyId == 0xffe1) key = "L-SHFT";
+        if (pttKeyId == 0xff67) key = "MENU";
+        if (pttKeyId == 0xffeb) key = "START";
+        if (pttKeyId == 0xff08) key = "BKSP";
+        if (pttKeyId == 0xff09) key = "TAB";
+        if (pttKeyId == 0xff50) key = "HOME";
+        if (pttKeyId == 0xff57) key = "END";
+        if (pttKeyId == 0xffff) key = "DEL";
+        if (pttKeyId == 0xff63) key = "INSRT";
+        if (pttKeyId == 0xff55) key = "PGUP";
+        if (pttKeyId == 0xff56) key = "PGDN";
+        if (pttKeyId == 0xff52) key = "UP";
+        if (pttKeyId == 0xff54) key = "DOWN";
+        if (pttKeyId == 0xff51) key = "LEFT";
+        if (pttKeyId == 0xff53) key = "RIGHT";
+        if (pttKeyId == 0xffbe) key = "F1";
+        if (pttKeyId == 0xffbf) key = "F2";
+        if (pttKeyId == 0xffc0) key = "F3";
+        if (pttKeyId == 0xffc1) key = "F4";
+        if (pttKeyId == 0xffc2) key = "F5";
+        if (pttKeyId == 0xffc3) key = "F6";
+        if (pttKeyId == 0xffc4) key = "F7";
+        if (pttKeyId == 0xffc5) key = "F8";
+        if (pttKeyId == 0xffc6) key = "F9";
+        if (pttKeyId == 0xffc7) key = "F10";
+        if (pttKeyId == 0xffc8) key = "F11";
+        if (pttKeyId == 0xffc9) key = "F12";
+        if (key.isEmpty()) key = "NA";
+        widget.pttKeyEdit->setText(QString("0x%1 [%2]").arg(pttKeyId, 8, 16, QChar('0')).arg(key));
+        widget.pttKeySetButton->setChecked(false);
+        capturePTTKey = false;
+    }
+}
