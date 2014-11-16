@@ -1765,7 +1765,7 @@
         </rect>
        </property>
        <property name="title">
-        <string>Leveler</string>
+        <string>TX Leveler</string>
        </property>
        <widget class="QCheckBox" name="levelerEnabledCheckBox">
         <property name="geometry">
@@ -1916,7 +1916,7 @@
         </rect>
        </property>
        <property name="title">
-        <string>ALC</string>
+        <string>TX ALC</string>
        </property>
        <widget class="QCheckBox" name="alcEnabledCheckBox">
         <property name="geometry">

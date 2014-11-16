@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1008</width>
+    <width>1016</width>
     <height>470</height>
    </rect>
   </property>
@@ -272,6 +272,9 @@
        </item>
        <item>
         <widget class="QRadioButton" name="zoomSampRadio">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="maximumSize">
           <size>
            <width>120</width>
@@ -325,6 +328,9 @@
       <property name="focusPolicy">
        <enum>Qt::NoFocus</enum>
       </property>
+      <property name="minimum">
+       <number>-40</number>
+      </property>
       <property name="maximum">
        <number>200</number>
       </property>
@@ -338,7 +344,7 @@
        <enum>Qt::Vertical</enum>
       </property>
       <property name="tickPosition">
-       <enum>QSlider::TicksBelow</enum>
+       <enum>QSlider::NoTicks</enum>
       </property>
      </widget>
     </item>
@@ -507,7 +513,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1008</width>
+     <width>1016</width>
      <height>20</height>
     </rect>
    </property>

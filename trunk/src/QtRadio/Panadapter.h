@@ -45,6 +45,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QMouseEvent>
+#include <QAbstractScrollArea>
 
 #include "Meter.h"
 #include "Connection.h"
@@ -271,7 +272,6 @@ signals:
 
 protected:
  //   void paintEvent(QPaintEvent*);
-
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);

@@ -24,8 +24,9 @@
 */
 
 #include "Panadapter.h"
+#include <QScrollBar>
 
-#define MAX_WIDTH 4096
+#define MAX_WIDTH 2000
 
 
 /****************** Added by KD0OSS **********************************************/
@@ -213,6 +214,10 @@ Panadapter::Panadapter(QWidget*& widget) {
     // KD0OSS ****************************************************************************************
     panadapterScene = new PanadapterScene();
     this->setScene(panadapterScene);
+    panadapterScene->setSceneRect(0.0, 0.0, 2000.0, height());
+//    this->setSceneRect(0.0, 0.0, width(), height());
+//    this->setViewport(new QGLWidget);
+    qDebug("view width: %d", width());
 
     panadapterScene->clear();
     panadapterScene->sceneItems.clear();
@@ -230,12 +235,15 @@ Panadapter::Panadapter(QWidget*& widget) {
 
     panadapterScene->update();
 
-    panadapterScene->spectrumPlot = new spectrumObject(width(), height()/2);
-    panadapterScene->waterfallItem = new waterfallObject(width(), height()/2);
+    panadapterScene->spectrumPlot = new spectrumObject(2000, height()/2);
+    panadapterScene->waterfallItem = new waterfallObject(2000, height()/2);
     splitViewBoundary = panadapterScene->height()/2;
 
     updateNfTimer = new QTimer(this);
     connect(updateNfTimer, SIGNAL(timeout()), this, SLOT(updateNotchFilter()));
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    QScrollBar *sb = horizontalScrollBar();
+    connect(sb, SIGNAL(sliderReleased()), this, SLOT(drawdBmLines()));
     //*************************************************************************************************
 }
 
@@ -503,7 +511,7 @@ void Panadapter::mouseMoveEvent(QMouseEvent* event){
 void Panadapter::mouseReleaseEvent(QMouseEvent* event) {
     int move=event->pos().x()-lastX;
     lastX=event->pos().x();
-    //qDebug() << __FUNCTION__ << ": " << event->pos().x() << " move:" << move;
+//    qDebug() << __FUNCTION__ << ": " << event->pos().x() << " move:" << move;
 
     if (notchFilterSelected > -1 && button == 1)   // KD0OSS
     {
@@ -544,7 +552,7 @@ void Panadapter::mouseReleaseEvent(QMouseEvent* event) {
             if (subRx) emit frequencyMoved(-move,move_ratio);
             else emit frequencyMoved(move,move_step);
         } else {
-            float hzPixel = (float) sampleRate / width() / zoom_factor;  // Panadapter resolution: Hz/pixel
+            float hzPixel = (float) sampleRate / 2000 / zoom_factor;  // Panadapter resolution: Hz/pixel
             long freqOffsetPixel;
             long long f = frequency - (sampleRate/2/zoom_factor) + (event->pos().x()*hzPixel)-LO_offset;
 
@@ -632,7 +640,7 @@ void Panadapter::wheelEvent(QWheelEvent *event) {
 // KD0OSS
 void Panadapter::drawCursor(int vfo, bool disable)
 {
-    float step=(float)sampleRate/(float)width();
+    float step=(float)sampleRate/2000.0;
     int offset=(int)((float)LO_offset/step);
     int cursorX;
     QPen pen;
@@ -650,12 +658,12 @@ void Panadapter::drawCursor(int vfo, bool disable)
 
     if (vfo == 1)
     {
-        cursorX = (width()/2)+offset*zoom_factor;
+        cursorX = (2000/2)+offset*zoom_factor;
         pen = QPen(QBrush(Qt::red,Qt::SolidPattern), 1);
     }
     else
     {
-        cursorX = width()/2 + (float)(subRxFrequency-frequency+LO_offset) * (float)width()*zoom_factor/(float)sampleRate;
+        cursorX = 2000/2 + (float)(subRxFrequency-frequency+LO_offset) * 2000.0*zoom_factor/(float)sampleRate;
         pen = QPen(QBrush(Qt::blue,Qt::SolidPattern), 1);
     }
     qDebug("offset: %d    curs: %d", offset, cursorX);
@@ -685,17 +693,17 @@ void Panadapter::drawFilter(int vfo, bool disable)
 
     if (vfo == 1)
     {
-        filterLeft = width()/2 + (float)(filterLow+LO_offset)* (float)width()*zoom_factor/(float)sampleRate;
-        filterRight = width()/2 + (float)(filterHigh+LO_offset)*(float)width()*zoom_factor/(float)sampleRate;
+        filterLeft = 2000/2 + (float)(filterLow+LO_offset)* 2000.0*zoom_factor/(float)sampleRate;
+        filterRight = 2000/2 + (float)(filterHigh+LO_offset) * 2000.0*zoom_factor/(float)sampleRate;
         color = Qt::gray;
      //   qDebug("FL: %d  FR: %d", filterLow, filterHigh);
     }
     else
     {
-        filterLeft = width()/2 + (float)(filterLow+LO_offset+subRxFrequency-frequency)
-                * (float)width()*zoom_factor/(float)sampleRate;
-        filterRight = width()/2 + (float)(filterHigh+LO_offset+subRxFrequency-frequency)
-                * (float)width()*zoom_factor/(float)sampleRate;
+        filterLeft = 2000/2 + (float)(filterLow+LO_offset+subRxFrequency-frequency)
+                * 2000.0*zoom_factor/(float)sampleRate;
+        filterRight = 2000/2 + (float)(filterHigh+LO_offset+subRxFrequency-frequency)
+                * 2000.0*zoom_factor/(float)sampleRate;
         color = Qt::lightGray;
     }
 
@@ -726,15 +734,15 @@ void Panadapter:: drawNotchFilter(int vfo, int index, bool disable)
 
     if (vfo == 1)
     {
-        filterLeft =  width()/2 + (float)(notchFilterFO[index]-frequency+LO_offset-(notchFilterBW[index]/2))*(float)width()*zoom_factor/(float)sampleRate;
-        filterRight =  width()/2 + (float)(notchFilterFO[index]-frequency+LO_offset+(notchFilterBW[index]/2))*(float)width()*zoom_factor/(float)sampleRate;
+        filterLeft =  2000/2 + (float)(notchFilterFO[index]-frequency+LO_offset-(notchFilterBW[index]/2))*2000.0*zoom_factor/(float)sampleRate;
+        filterRight =  2000/2 + (float)(notchFilterFO[index]-frequency+LO_offset+(notchFilterBW[index]/2))*2000.0*zoom_factor/(float)sampleRate;
         color = Qt::green;
  //       qDebug("NFL: %d  NFR: %d", filterLeft, filterRight);
     }
     else
     {
-        filterLeft = width()/2 + (float)(notchFilterFO[index]-frequency+LO_offset+subRxFrequency-frequency-(notchFilterBW[index]/2)) * (float)width()*zoom_factor/(float)sampleRate;
-        filterRight = width()/2 + (float)(notchFilterFO[index]-frequency+LO_offset+subRxFrequency-frequency+(notchFilterBW[index]/2)) * (float)width()*zoom_factor/(float)sampleRate;
+        filterLeft = 2000/2 + (float)(notchFilterFO[index]-frequency+LO_offset+subRxFrequency-frequency-(notchFilterBW[index]/2)) * 2000.0*zoom_factor/(float)sampleRate;
+        filterRight = 2000/2 + (float)(notchFilterFO[index]-frequency+LO_offset+subRxFrequency-frequency+(notchFilterBW[index]/2)) * 2000.0*zoom_factor/(float)sampleRate;
         color = Qt::green;
     }
 
@@ -771,15 +779,15 @@ void Panadapter:: drawUpdatedNotchFilter(int vfo)
 
         if (vfo == 1)
         {
-            filterLeft =  width()/2 + (float)(notchFilterFO[index]-frequency+LO_offset-(notchFilterBW[index]/2))*(float)width()*zoom_factor/(float)sampleRate;
-            filterRight =  width()/2 + (float)(notchFilterFO[index]-frequency+LO_offset+(notchFilterBW[index]/2))*(float)width()*zoom_factor/(float)sampleRate;
+            filterLeft =  2000/2 + (float)(notchFilterFO[index]-frequency+LO_offset-(notchFilterBW[index]/2))*2000.0*zoom_factor/(float)sampleRate;
+            filterRight =  2000/2 + (float)(notchFilterFO[index]-frequency+LO_offset+(notchFilterBW[index]/2))*2000.0*zoom_factor/(float)sampleRate;
             color = Qt::green;
       //      qDebug("NFL: %d  NFR: %d", filterLeft, filterRight);
         }
         else
         {
-            filterLeft = width()/2 + (float)(notchFilterFO[index]-frequency+LO_offset+subRxFrequency-frequency-(notchFilterBW[index]/2)) * (float)width()*zoom_factor/(float)sampleRate;
-            filterRight = width()/2 + (float)(notchFilterFO[index]-frequency+LO_offset+subRxFrequency-frequency+(notchFilterBW[index]/2)) * (float)width()*zoom_factor/(float)sampleRate;
+            filterLeft = 2000/2 + (float)(notchFilterFO[index]-frequency+LO_offset+subRxFrequency-frequency-(notchFilterBW[index]/2)) * 2000.0*zoom_factor/(float)sampleRate;
+            filterRight = 2000/2 + (float)(notchFilterFO[index]-frequency+LO_offset+subRxFrequency-frequency+(notchFilterBW[index]/2)) * 2000.0*zoom_factor/(float)sampleRate;
             color = Qt::green;
         }
 
@@ -810,16 +818,17 @@ void Panadapter::drawdBmLines(void)
     lines = 0;
     int V = spectrumHigh - spectrumLow;
     int numSteps = V / 20;
-    for (int i = 1; i < numSteps; i++) {
+    for (int i = 1; i < numSteps; i++)
+    {
         int num = spectrumHigh - i * 20;
         int y = (int) floor((spectrumHigh - num) * (splitViewBoundary) / V);
 
-        lineObject *lineItem = new lineObject(panadapterScene, QPoint(0,y), QPoint(width(),y), QPen(QColor(255,255,255,128), 1,Qt::DotLine));
+        lineObject *lineItem = new lineObject(panadapterScene, QPoint(0,y), QPoint(2000,y), QPen(QColor(255,255,255,128), 1,Qt::DotLine));
         panadapterScene->addItem(lineItem);
         lineItem->update();
         panadapterScene->sceneItems.insert(QString("dl%1").arg(lines), lineItem);
 
-        textObject *textItem = new textObject(panadapterScene, QString::number(num)+" dBm", QPoint(3,y), Qt::green);
+        textObject *textItem = new textObject(panadapterScene, QString::number(num)+" dBm", QPoint(abs(mapToScene(3,y).x())+3,y), Qt::green);
         panadapterScene->addItem(textItem);
         textItem->update();
 
@@ -835,7 +844,7 @@ void Panadapter::drawFrequencyLines(void)
     static int lines;
 
     float zoom_factor = 1.0f + zoom/25.0f;
-    float hzPerPixel=(float)sampleRate/(float)width()/zoom_factor;
+    float hzPerPixel=(float)sampleRate/2000.0/zoom_factor;
     long long lineStep = 10000;
     if (sampleRate > 1000000) lineStep = 100000;
     else if (sampleRate > 500000) lineStep = 50000;
@@ -854,7 +863,7 @@ void Panadapter::drawFrequencyLines(void)
         }
     }
     lines = 0;
-    for(int i=0;i<width();i++) {
+    for(int i=0;i<2000;i++) {
         long long f=frequency-((float)sampleRate/zoom_factor/2.0)-(float)LO_offset+(long long)(hzPerPixel*(float)i);
         if(f>0) {
             if((f % lineStep)<(long long)hzPerPixel) {
@@ -879,7 +888,7 @@ void Panadapter::drawFrequencyLines(void)
 void Panadapter::drawBandLimits(void)
 {
     float zoom_factor = 1.0f + zoom/25.0f;
-    float hzPerPixel=(float)sampleRate/(float)width()/zoom_factor;
+    float hzPerPixel=(float)sampleRate/2000.0/zoom_factor;
     long long min_display=frequency-((float)sampleRate/zoom_factor/2.0);
     long long max_display=frequency+((float)sampleRate/zoom_factor/2.0);
 
@@ -899,16 +908,16 @@ void Panadapter::drawBandLimits(void)
         }
     }
 
-    if(band_min!=0LL && band_max!=0LL) {
+    if (band_min!=0LL && band_max!=0LL) {
         int i;
-        if((min_display<band_min)&&(max_display>band_min)) {
+        if ((min_display<band_min)&&(max_display>band_min)) {
             i=(band_min-min_display)/(long long)hzPerPixel;
             lineObject *lineItem = new lineObject(panadapterScene, QPoint(i,splitViewBoundary), QPoint(i,0), QPen(Qt::red, 2,Qt::DotLine));
             panadapterScene->addItem(lineItem);
             lineItem->update();
             panadapterScene->sceneItems.insert(QString("bl0"), lineItem);
         }
-        if((min_display<band_max)&&(max_display>band_max)) {
+        if ((min_display<band_max)&&(max_display>band_max)) {
             i=(band_max-min_display)/(long long)hzPerPixel;
             lineObject *lineItem = new lineObject(panadapterScene, QPoint(i+1,splitViewBoundary), QPoint(i+1,0), QPen(Qt::red, 2,Qt::DotLine));
             panadapterScene->addItem(lineItem);
@@ -933,24 +942,24 @@ void Panadapter::drawSquelch(void)
         panadapterScene->sceneItems.remove("st");
     }
 
-    if(settingSquelch || showSquelchControl) {
+    if (settingSquelch || showSquelchControl) {
         squelchY=(int) floor(((float) spectrumHigh - squelchVal)*(float)(splitViewBoundary) / (float) (spectrumHigh - spectrumLow));
-        lineObject *lineItem = new lineObject(panadapterScene, QPoint(0,squelchY), QPoint(width(),squelchY), QPen(Qt::red, 1,Qt::DashLine));
+        lineObject *lineItem = new lineObject(panadapterScene, QPoint(0,squelchY), QPoint(2000,squelchY), QPen(Qt::red, 1,Qt::DashLine));
         panadapterScene->addItem(lineItem);
         lineItem->update();
         text.sprintf("%s","Squelch");
-        textObject *textItem = new textObject(panadapterScene, text, QPoint(width()-48,squelchY), Qt::red);
+        textObject *textItem = new textObject(panadapterScene, text, QPoint(2000-48,squelchY), Qt::red);
         panadapterScene->addItem(textItem);
         textItem->update();
         panadapterScene->sceneItems.insert("sl", lineItem);
         panadapterScene->sceneItems.insert("st", textItem);
-    } else if(squelch) {
+    } else if (squelch) {
         squelchY=(int) floor(((float) spectrumHigh - squelchVal)*(float)(splitViewBoundary) / (float) (spectrumHigh - spectrumLow));
-        lineObject *lineItem = new lineObject(panadapterScene, QPoint(0,squelchY), QPoint(width(),squelchY), QPen(Qt::red, 1,Qt::DashLine));
+        lineObject *lineItem = new lineObject(panadapterScene, QPoint(0,squelchY), QPoint(2000,squelchY), QPen(Qt::red, 1,Qt::DashLine));
         panadapterScene->addItem(lineItem);
         lineItem->update();
         text.sprintf("%s","Squelch");
-        textObject *textItem = new textObject(panadapterScene, text, QPoint(width()-48,squelchY), Qt::red);
+        textObject *textItem = new textObject(panadapterScene, text, QPoint(2000-48,squelchY), Qt::red);
         panadapterScene->addItem(textItem);
         textItem->update();
         panadapterScene->sceneItems.insert("sl", lineItem);
@@ -1003,7 +1012,7 @@ void Panadapter::setZoom(int value){
         vzoom = value;
     }
 
-    if (vzoom > 0)
+    if (width() < 2000)
         setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     else
         setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -1012,6 +1021,7 @@ void Panadapter::setZoom(int value){
         return;
     drawFrequencyLines();
     drawBandLimits();
+    drawdBmLines();
     drawCursor(1, false);
     drawFilter(1, false);
     drawCursor(2, !subRx);
@@ -1121,7 +1131,7 @@ void Panadapter::updateSpectrumFrame(char* header,char* buffer,int width) {
     subrx_meter=((header[7]&0xFF)<<8)+(header[8]&0xFF);
     header_sampleRate=((header[9]&0xFF)<<24)+((header[10]&0xFF)<<16)+((header[11]&0xFF)<<8)+(header[12]&0xFF);
 
-    if(version==2 && subversion>0) {
+    if (version==2 && subversion>0) {
         // only in version 2.1 and above
         LO_offset=((header[13]&0xFF)<<8)+(header[14]&0xFF);
     } else {
@@ -1133,7 +1143,7 @@ void Panadapter::updateSpectrumFrame(char* header,char* buffer,int width) {
     size = width;
 
     // do not rotate Panadapter display.  LO_offset rotation done in dspserver
-    for(i=0;i<width;i++) {
+    for (i=0;i<width;i++) {
         samples[i] = (float)(samples[i] * avg - (buffer[i] & 0xFF))/(float)(avg+1);
         wsamples[i] = buffer[i];
     }
@@ -1148,7 +1158,7 @@ void Panadapter::updateSpectrumFrame(char* header,char* buffer,int width) {
     }
     plot.clear();
     for (i = 0; i < width; i++) {
-        plot << QPoint(i, (int) floor(((float) spectrumHigh - samples[i])*(float)(splitViewBoundary) / (float) (spectrumHigh - spectrumLow)));
+        plot << QPoint(i, (int)floor(((float) spectrumHigh - samples[i])*(float)(splitViewBoundary) / (float) (spectrumHigh - spectrumLow)));
     }
 
     if (!initialized)   // KD0OSS
@@ -1158,7 +1168,6 @@ void Panadapter::updateSpectrumFrame(char* header,char* buffer,int width) {
         panadapterScene->addItem(panadapterScene->spectrumPlot);
         panadapterScene->addItem(panadapterScene->waterfallItem);
         drawFrequencyLines();
-        drawdBmLines();
         drawBandLimits();
         drawCursor(1, false);
         drawFilter(1, false);
@@ -1166,7 +1175,8 @@ void Panadapter::updateSpectrumFrame(char* header,char* buffer,int width) {
 //        drawUpdatedNotchFilter(2);
         QGraphicsView::setMouseTracking(true);
         splitViewBoundary = panadapterScene->height()/2;
-
+        centerOn((QGraphicsItem*)panadapterScene->sceneItems.find(QString("flt%1").arg(1)).value());
+        drawdBmLines();
 //        QTimer::singleShot(1000,this,SLOT(redrawItems()));
     }
 
@@ -1430,7 +1440,7 @@ void waterfallObject::updateWaterfall(char* buffer, int length, int starty) {
     int x,y;
     int average=0;
 
-    if(samples!=NULL) {
+    if (samples!=NULL) {
         free(samples);
     }
 
@@ -1449,7 +1459,7 @@ void waterfallObject::updateWaterfall(char* buffer, int length, int starty) {
     size = length;
  //   QTimer::singleShot(0,this,SLOT(updateWaterfall_2()));
 
-    if(image.width()!=itemWidth || (image.height()/2) != itemHeight) {
+    if (image.width()!=itemWidth || (image.height()/2) != itemHeight) {
         qDebug() << "Waterfall::updateWaterfall " << size << "(" << itemWidth << ")," << itemHeight;
         image = QImage(itemWidth, itemHeight*2, QImage::Format_RGB32);
         cy = image.height()/2 - 1;
@@ -1463,7 +1473,7 @@ void waterfallObject::updateWaterfall(char* buffer, int length, int starty) {
 
     // draw the new line
     #pragma omp parallel for schedule(static)
-    for(x=0;x<size;x++){
+    for (x=0;x<size;x++){
         uint pixel = calculatePixel(samples[x]);
         image.setPixel(x,cy,pixel);
         image.setPixel(x,cy+(image.height()/2),pixel);
@@ -1525,11 +1535,11 @@ uint waterfallObject::calculatePixel(int sample) {
 //        return pixel;
 
     int R,G,B;
-    if(sample<waterfallLow) {
+    if (sample<waterfallLow) {
         R=colorLowR;
         G=colorLowG;
         B=colorLowB;
-    } else if(sample>waterfallHigh) {
+    } else if (sample>waterfallHigh) {
         R=colorHighR;
         G=colorHighG;
         B=colorHighB;
@@ -1537,32 +1547,32 @@ uint waterfallObject::calculatePixel(int sample) {
         float range=waterfallHigh-waterfallLow;
         float offset=sample-waterfallLow;
         float percent=offset/range;
-        if(percent<(2.0f/9.0f)) {
+        if (percent<(2.0f/9.0f)) {
             float local_percent = percent / (2.0f/9.0f);
             R = (int)((1.0f-local_percent)*colorLowR);
             G = (int)((1.0f-local_percent)*colorLowG);
             B = (int)(colorLowB + local_percent*(255-colorLowB));
-        } else if(percent<(3.0f/9.0f)) {
+        } else if (percent<(3.0f/9.0f)) {
             float local_percent = (percent - 2.0f/9.0f) / (1.0f/9.0f);
             R = 0;
             G = (int)(local_percent*255);
             B = 255;
-        } else if(percent<(4.0f/9.0f)) {
+        } else if (percent<(4.0f/9.0f)) {
              float local_percent = (percent - 3.0f/9.0f) / (1.0f/9.0f);
              R = 0;
              G = 255;
              B = (int)((1.0f-local_percent)*255);
-        } else if(percent<(5.0f/9.0f)) {
+        } else if (percent<(5.0f/9.0f)) {
              float local_percent = (percent - 4.0f/9.0f) / (1.0f/9.0f);
              R = (int)(local_percent*255);
              G = 255;
              B = 0;
-        } else if(percent<(7.0f/9.0f)) {
+        } else if (percent<(7.0f/9.0f)) {
              float local_percent = (percent - 5.0f/9.0f) / (2.0f/9.0f);
              R = 255;
              G = (int)((1.0f-local_percent)*255);
              B = 0;
-        } else if(percent<(8.0f/9.0f)) {
+        } else if (percent<(8.0f/9.0f)) {
              float local_percent = (percent - 7.0f/9.0f) / (1.0f/9.0f);
              R = 255;
              G = 0;

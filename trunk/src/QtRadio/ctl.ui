@@ -72,7 +72,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>1      Power out      100</string>
+    <string>1      Power out %     100</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -132,7 +132,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>1      Audio Gain     100</string>
+    <string>1      Audio Gain %   100</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

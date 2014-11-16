@@ -627,14 +627,16 @@ void UI::fpsChanged(int f) {
 
 void UI::setFPS(void){
     QString command;
-    command.clear(); QTextStream(&command) << "setFPS " << widget.spectrumView->width() << " " << fps;
+//    command.clear(); QTextStream(&command) << "setFPS " << widget.spectrumView->width() << " " << fps;
+    command.clear(); QTextStream(&command) << "setFPS " << "2000" << " " << fps;
     connection.sendCommand(command);
 }
 
 void UI::resizeEvent(QResizeEvent *){
     if (protocol3){
         QString command;
-        command.clear(); QTextStream(&command) << "setFPS " << widget.spectrumView->width() << " " << fps;
+//        command.clear(); QTextStream(&command) << "setFPS " << widget.spectrumView->width() << " " << fps;
+        command.clear(); QTextStream(&command) << "setFPS " << "2000" << " " << fps;
         connection.sendCommand(command);
     }
 }
@@ -2597,10 +2599,10 @@ void UI::pttChange(int caller, bool ptt)
                 // Set the AM carrier level to match the tune power slider value in a scale 0 to 1.0
                 if ((dspversion >= 20120201)  && canTX && chkTX)
                 {
-                    command.clear(); QTextStream(&command) << "setTXAMCarrierLevel " << (double)widget.ctlFrame->getTxPwr()/100 <<" "<< configure.thisuser <<" " << configure.thispass;;
+                    command.clear(); QTextStream(&command) << "setTXAMCarrierLevel " << (double)widget.ctlFrame->getTxPwr()/1000 <<" "<< configure.thisuser <<" " << configure.thispass;;
                 }else
                 {
-                    command.clear(); QTextStream(&command) << "setTXAMCarrierLevel " << (double)widget.ctlFrame->getTxPwr()/100;
+                    command.clear(); QTextStream(&command) << "setTXAMCarrierLevel " << (double)widget.ctlFrame->getTxPwr()/1000;
                 }
                 connection.sendCommand(command);
                 //Mute the receiver audio and freeze the spectrum and waterfall display
@@ -2650,10 +2652,10 @@ void UI::pttChange(int caller, bool ptt)
                 //Restore AM carrier level to previous level. // KD0OSS
                 if ((dspversion >= 20120201) && canTX && chkTX)
                 {
-                    command.clear(); QTextStream(&command) << "setTXAMCarrierLevel " << currentPwr/100 <<" " << configure.thisuser <<" " << configure.thispass;
+                    command.clear(); QTextStream(&command) << "setTXAMCarrierLevel " << currentPwr/1000 <<" " << configure.thisuser <<" " << configure.thispass;
                 }else
                 {
-                    command.clear(); QTextStream(&command) << "setTXAMCarrierLevel " << currentPwr/100;
+                    command.clear(); QTextStream(&command) << "setTXAMCarrierLevel " << currentPwr/1000;
                 }
                 connection.sendCommand(command);
                 //Restore the mode back to original before tuning
