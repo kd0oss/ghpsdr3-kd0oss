@@ -446,6 +446,7 @@ void spectrum_timer_handler(union sigval usv)
     {
 //        Process_Panadapter(1, spectrumBuffer);
         TXAGetSpecF1(2, spectrumBuffer);
+//        GetNAPixels(2, spectrumBuffer, &flag);
       //  meter = CalculateTXMeter(1, txMeterMode);        // Tx meter mode added by KD0OSS
         meter = GetTXAMeter(2, TXA_OUT_AV);
         subrx_meter = -121;
@@ -1702,7 +1703,7 @@ void readcb(struct bufferevent *bev, void *ctx){
             /* FIXME: validate! */
             state=atoi(tokens[0]);
           //  SetSubRXSt(0,1,state);
-            SetChannelState(1, state, 1);
+    //        SetChannelState(1, state, 1);
         } else if(strncmp(cmd,"setsubrxfrequency",17)==0) {
             int offset;
             if (tokenize_cmd(&saveptr, tokens, 1) != 1)
@@ -1955,9 +1956,9 @@ void readcb(struct bufferevent *bev, void *ctx){
                  //   FlushAllBufs(0, false);
                  //   FlushAllBufs(1, true);
                  //   SetThreadProcessingMode(1, 2);
-                    SetChannelState(1, 0, 0);
-                    SetChannelState(0, 0, 1);
-               //     SetChannelState(2, 1, 0);
+                 //   SetChannelState(1, 0, 0);
+                 //   SetChannelState(0, 0, 1);
+                 //   SetChannelState(2, 1, 0);
                     ozySetMox(1);
                 }else if(txcfg == TXPASSWD){
                     if (ntok == 3) {
@@ -1971,8 +1972,8 @@ void readcb(struct bufferevent *bev, void *ctx){
                            //     FlushAllBufs(0, false);
                            //     FlushAllBufs(1, true);
                            //     SetThreadProcessingMode(1, 2);
-                                SetChannelState(1, 0, 0);
-                                SetChannelState(0, 0, 1);
+                       //         SetChannelState(1, 0, 0);
+                       //         SetChannelState(0, 0, 1);
                        //         SetChannelState(2, 1, 0);
                                 ozySetMox(1);
                             }else{
@@ -1992,8 +1993,8 @@ void readcb(struct bufferevent *bev, void *ctx){
                     ozySetMox(0);
                 //    SetChannelState(2, 0, 1);
                 //    sleep(1);
-                    SetChannelState(0, 1, 0);
-                    SetChannelState(1, 1, 0);
+                //    SetChannelState(0, 1, 0);
+                //    SetChannelState(1, 1, 0);
                 //    SetThreadProcessingMode(1, 0);
                 //    FlushAllBufs(1, true);
                 //    FlushAllBufs(0, false);
@@ -2007,8 +2008,8 @@ void readcb(struct bufferevent *bev, void *ctx){
                             ozySetMox(0);
                     //        SetChannelState(2, 0, 1);
                     //        sleep(1);
-                            SetChannelState(0, 1, 0);
-                            SetChannelState(1, 1, 0);
+                    //        SetChannelState(0, 1, 0);
+                    //        SetChannelState(1, 1, 0);
                   //          SetThreadProcessingMode(1, 0);
                   //          FlushAllBufs(1, true);
                   //          FlushAllBufs(0, false);

@@ -397,7 +397,7 @@ int main(int argc, char* argv[])
     SetTXABandpassFreqs(2, 150, 2850);
     SetTXAMode(2, TXA_USB);
     SetTXAAMCarrierLevel(2, 0.5);
-//    SetChannelState(2, 0, 1);
+    SetChannelState(2, 1, 0);
     
     tx_init();	// create and starts the tx_thread (see client.c)
     // the tx_thread reads the Mic_audio_stream queue, makes the sample rate adaption
