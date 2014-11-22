@@ -141,7 +141,7 @@ HEADERS  += \
     XvtrEntry.h \
     Bookmarks.h \
     KeypadDialog.h \
-    codec2.h \
+ #   codec2.h \
     smeter.h \
     rigctl.h \
     vfo.h \
@@ -210,6 +210,8 @@ OTHER_FILES += \
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../../../usr/lib/release/ 
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../usr/lib/debug/ 
-else:symbian: LIBS += -lcodec2 -lsamplerate
-else:unix: LIBS += -lcodec2 -lsamplerate -lortp
+#else:symbian: LIBS += -lcodec2 -lsamplerate
+#else:unix: LIBS += -lcodec2 -lsamplerate -lortp
+else:symbian: LIBS += -lsamplerate
+else:unix: LIBS += -lsamplerate -lortp
 

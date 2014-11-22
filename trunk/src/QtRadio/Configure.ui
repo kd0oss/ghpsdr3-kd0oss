@@ -868,7 +868,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="options">
       <attribute name="title">
@@ -1306,9 +1306,9 @@
        <widget class="QSpinBox" name="RxIQspinBox">
         <property name="geometry">
          <rect>
-          <x>90</x>
-          <y>120</y>
-          <width>59</width>
+          <x>95</x>
+          <y>126</y>
+          <width>62</width>
           <height>23</height>
          </rect>
         </property>
@@ -1337,12 +1337,15 @@
         <property name="text">
          <string>RXIQMu:</string>
         </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
        </widget>
        <widget class="QCheckBox" name="RxIQdivCheckBox">
         <property name="geometry">
          <rect>
           <x>20</x>
-          <y>97</y>
+          <y>99</y>
           <width>151</width>
           <height>25</height>
          </rect>

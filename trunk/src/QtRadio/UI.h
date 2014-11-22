@@ -372,7 +372,7 @@ private:
     AudioInput* audioinput;
     int mic_buffer_count;       // counter of mic_buffer, to encode if reaches CODEC2_SAMPLE_PER_FRAME
     int mic_frame_count;        // counter of mic_buffer, to encode enough frames before sending
-    struct CODEC2 * mic_codec2;
+//    struct CODEC2 * mic_codec2;
 
 
     qint16 mic_buffer[MIC_BUFFER_SIZE];

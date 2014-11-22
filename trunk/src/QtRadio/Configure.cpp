@@ -66,7 +66,7 @@ Configure::Configure() {
     widget.MicOrderComboBox->setCurrentIndex(0);
     widget.MicChannelsSpinBox->setValue(1);
     widget.MicEncodingComboBox->addItem("aLaw");
-    widget.MicEncodingComboBox->addItem("Codec 2");
+//    widget.MicEncodingComboBox->addItem("Codec 2");
 
     widget.hostComboBox->addItem("127.0.0.1");
     widget.hostComboBox->addItem("g0orx.homelinux.net");
@@ -77,7 +77,7 @@ Configure::Configure() {
     widget.fpsSpinBox->setValue(15);
     widget.encodingComboBox->addItem("aLaw");
     widget.encodingComboBox->addItem("16 bit pcm");
-    widget.encodingComboBox->addItem("Codec 2");
+//    widget.encodingComboBox->addItem("Codec 2");
     widget.byteOrderComboBox->addItem("LittleEndian");
     widget.byteOrderComboBox->addItem("BigEndian");
     widget.byteOrderComboBox->setCurrentIndex(0);

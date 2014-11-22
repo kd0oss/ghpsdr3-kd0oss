@@ -103,7 +103,7 @@ public slots:
 private:
     void aLawDecode(char* buffer,int length);
     void pcmDecode(char * buffer,int length);
-    void codec2Decode(char* buffer, int length);
+  //  void codec2Decode(char* buffer, int length);
     void resample(int no_of_samples);
     void init_decodetable();
     float buffer_in[RESAMPLING_BUFFER_SIZE];
@@ -114,7 +114,7 @@ private:
     SRC_DATA sr_data;
     QHQueue<qint16> queue;
     QHQueue<qint16> *pdecoded_buffer;
-    struct CODEC2 * codec2;
+ //   struct CODEC2 * codec2;
     int audio_channels;
     int audio_encoding;
 };

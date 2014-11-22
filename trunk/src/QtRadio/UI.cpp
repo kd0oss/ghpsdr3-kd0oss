@@ -57,7 +57,7 @@
 #include "Meter.h"
 #include "Panadapter.h"
 #include "smeter.h"
-#include "codec2.h"
+//#include "codec2.h"
 #include "servers.h"
 #include "ctl.h"
 #include "powermate.h"
@@ -92,7 +92,7 @@ UI::UI(const QString server) {
     useRTP=configure.getRTP();
     configure.initAudioDevices(audio);
 
-    mic_codec2 = codec2_create(CODEC2_MODE_3200);
+//    mic_codec2 = codec2_create(CODEC2_MODE_3200);
     audioinput = new AudioInput;
     configure.initMicDevices(audioinput);
 
@@ -444,7 +444,7 @@ UI::UI(const QString server) {
 UI::~UI() {
     connection.disconnect();
     rtp->deleteLater();
-    codec2_destroy(mic_codec2);
+ //   codec2_destroy(mic_codec2);
     equalizer->deleteLater();
     saveSettings();
 }
@@ -1045,7 +1045,7 @@ void UI::micSendAudio(QQueue<qint16>* queue){
             }
         }
 
-    } else if (audioinput->getMicEncoding() == 1){      // Codec 2
+    } /* else if (audioinput->getMicEncoding() == 1){      // Codec 2
         int samples_per_frame = codec2_samples_per_frame(mic_codec2);
         int bits_size = codec2_bits_per_frame(mic_codec2)/8;
         while(! queue->isEmpty()){
@@ -1067,7 +1067,7 @@ void UI::micSendAudio(QQueue<qint16>* queue){
                 }
             }
         }
-    } else if (audioinput->getMicEncoding() == 0){      // aLaw
+    } */else if (audioinput->getMicEncoding() == 0){      // aLaw
         while(!queue->isEmpty()) {
             qint16 sample=queue->dequeue();
             if(tuning) sample=0;

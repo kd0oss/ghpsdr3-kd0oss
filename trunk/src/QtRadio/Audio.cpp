@@ -46,7 +46,7 @@
 #include <omp.h>
 #endif
 #include "Audio.h"
-#include "codec2.h"
+//#include "codec2.h"
 
 
 Audio_playback::Audio_playback()
@@ -528,13 +528,13 @@ Audio_processing::Audio_processing(){
     }
     init_decodetable();
     src_ratio = 1.0;
-    codec2 = codec2_create(CODEC2_MODE_3200);
+ //   codec2 = codec2_create(CODEC2_MODE_3200);
     pdecoded_buffer = &queue;
 }
 
 Audio_processing::~Audio_processing(){
      src_delete(src_state);
-     codec2_destroy(codec2);
+  //   codec2_destroy(codec2);
 }
 
 void Audio_processing::set_queue(QHQueue<qint16> *buffer){
@@ -569,7 +569,7 @@ void Audio_processing::process_audio(char* header,char* buffer,int length) {
     if (pdecoded_buffer->count() < 4000){
         if (audio_encoding == 0) aLawDecode(buffer,length);
         else if (audio_encoding == 1) pcmDecode(buffer,length);
-        else if (audio_encoding == 2) codec2Decode(buffer,length);
+ //       else if (audio_encoding == 2) codec2Decode(buffer,length);
         else {
             qDebug() << "Error: Audio::process_audio:  audio_encoding = " << audio_encoding;
         }
@@ -625,7 +625,7 @@ void Audio_processing::pcmDecode(char* buffer,int length) {
         }
     //resample(length/2);
 }
-
+/*
 void Audio_processing::codec2Decode(char* buffer,int length) {
     int i,j,k;
     int samples_per_frame = codec2_samples_per_frame(codec2);
@@ -646,7 +646,7 @@ void Audio_processing::codec2Decode(char* buffer,int length) {
         k++;
     }
     //resample(samples_per_frame);
-}
+} */
 
 void Audio_processing::init_decodetable() {
     qDebug() << "init_decodetable";
