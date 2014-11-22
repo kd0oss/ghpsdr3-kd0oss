@@ -59,7 +59,7 @@
 #include "audiostream.h"
 #include "client.h"
 #include "buffer.h"
-#include "codec2loc.h"
+//#include "codec2loc.h"
 #include "util.h"
 
 
@@ -122,13 +122,12 @@ static int samples_per_frame, bits_per_frame;
 #undef BITS_SIZE
 #define BITS_SIZE   ((bits_per_frame + 7) / 8)
 
-void * codec2 = NULL;
+//void * codec2 = NULL;
 //unsigned char bits[BITS_SIZE];
 unsigned char *bits;
-// short codec2_buffer[CODEC2_SAMPLES_PER_FRAME];
-short *codec2_buffer;
+//short *codec2_buffer;
 
-static int codec2_count=0;
+//static int codec2_count=0;
 
 static int audio_stream_buffer_insert=0;
 
@@ -173,13 +172,13 @@ void allocate_audio_buffer(){
         /* 16 bit per sample */
         samplesize = as_conf_cache.bufsize * as_conf_cache.channels * 2;
         break;
-    case ENCODING_CODEC2:
-        /* FIXME: This seems like the wrong place for this? */
+/*    case ENCODING_CODEC2:
+        // FIXME: This seems like the wrong place for this?
         codec2_count = 0;
-        /* Force buffer size */
+        // Force buffer size 
         as_conf_cache.bufsize = BITS_SIZE * NO_CODEC2_FRAMES;
         samplesize = as_conf_cache.bufsize * as_conf_cache.channels;
-        break;
+        break; */
     default:
         /* No ENCODING_ALAW2! */
         samplesize = 0;
@@ -207,10 +206,10 @@ void audio_stream_put_samples(short left_sample,short right_sample) {
     /* FIXME: This really only applies once, at startup */
     if (!audio_buffer) {
         allocate_audio_buffer();
-        samples_per_frame = codec2_samples_per_frame( codec2 );
-        bits_per_frame = codec2_bits_per_frame( codec2 );
-        codec2_buffer = (short *) malloc( sizeof( short ) * samples_per_frame );
-        bits = (unsigned char *) malloc( sizeof( unsigned char ) * BITS_SIZE );
+//        samples_per_frame = codec2_samples_per_frame( codec2 );
+//        bits_per_frame = codec2_bits_per_frame( codec2 );
+//        codec2_buffer = (short *) malloc( sizeof( short ) * samples_per_frame );
+//        bits = (unsigned char *) malloc( sizeof( unsigned char ) * BITS_SIZE );
     }
 
     // samples are delivered at 48K or 8K depending on audiostream_conf.samplerate
@@ -231,9 +230,9 @@ void audio_stream_put_samples(short left_sample,short right_sample) {
             audio_buffer[offset] = (left_sample/2 + right_sample/2) & 0xff;
             audio_buffer[offset + 1] = (left_sample/2 + right_sample/2) >> 8;
             break;
-        case ENCODING_CODEC2:
+/*        case ENCODING_CODEC2:
             codec2_buffer[audio_stream_buffer_insert] = left_sample/2 + right_sample/2;
-            break;
+            break; */
         }
     } else {
         switch (as_conf_cache.encoding) {
@@ -255,7 +254,7 @@ void audio_stream_put_samples(short left_sample,short right_sample) {
 
     audio_stream_buffer_insert++;
 
-
+/*
     if ((as_conf_cache.encoding == ENCODING_CODEC2)
             && (audio_stream_buffer_insert == samples_per_frame))  {
         codec2_encode(codec2, bits, codec2_buffer);
@@ -278,9 +277,10 @@ void audio_stream_put_samples(short left_sample,short right_sample) {
             //allocate_audio_buffer();
         }
     }
-
+*/
     if ((as_conf_cache.encoding != ENCODING_CODEC2)
-            && (audio_stream_buffer_insert==as_conf_cache.bufsize)) {
+            && (audio_stream_buffer_insert==as_conf_cache.bufsize)) 
+    {
         audio_buffer[0]=AUDIO_BUFFER;
         audio_buffer_length = as_conf_cache.bufsize * as_conf_cache.channels;
         if (as_conf_cache.encoding == ENCODING_PCM)

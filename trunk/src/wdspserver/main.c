@@ -103,7 +103,7 @@ const char *version = "20141106;-master"; //YYYYMMDD; text desc
 #include "soundcard.h"
 #include "ozy.h"
 #include "version.h"
-#include "codec2loc.h"
+//#include "codec2loc.h"
 #include "register.h"
 //#include "sdrexport.h"
 #include "G711A.h"
@@ -375,7 +375,7 @@ int main(int argc, char* argv[])
     audio_stream_init(receiver);
     audio_stream_reset();
 
-    codec2 = codec2_create(CODEC2_MODE_3200);
+//    codec2 = codec2_create(CODEC2_MODE_3200);
     G711A_init();
     ozy_init(config.server_address);   // create and starts iq_thread in ozy.c in order to
     // receive iq stream from hardware server

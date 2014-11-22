@@ -69,9 +69,16 @@ typedef struct _buffer {
     unsigned long long sequence;
     unsigned short offset;
     unsigned short length;
-    unsigned char adc[2];   // Byte0 = Forward power, Byte1 = Reverse power. Added by KD0OSS
     unsigned char data[500];
 } BUFFER;
+
+typedef struct _buffer_sdr {
+    unsigned long long sequence;
+    unsigned short offset;
+    unsigned short length;
+    unsigned char adc[2];   // Byte0 = Forward power, Byte1 = Reverse power. Added by KD0OSS
+    unsigned char data[500];
+} BUFFER_SDR;
 
 #define SPECTRUM_BUFFER_SIZE 8192
 

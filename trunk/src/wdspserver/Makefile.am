@@ -4,8 +4,8 @@ bin_PROGRAMS = dspserver
 
 noinst_LIBRARIES = libsdrutil.a
 
-dspserver_CFLAGS = -O3 -Wall -I$(top_srcdir)/trunk/src/DttSP -Wno-unused-function $(THREAD_DEBUG_CFLAGS) @SIMD_FLAGS@
-dspserver_LDADD = ../DttSP/libDttSP.a libsdrutil.a -lrt -lssl -lcrypto 
+dspserver_CFLAGS = -O3 -Wall -I$(top_srcdir)/trunk/src/wdsp -Wno-unused-function $(THREAD_DEBUG_CFLAGS) @SIMD_FLAGS@
+dspserver_LDADD = ../wdsp/libwdsp.a libsdrutil.a -lrt -lssl -lcrypto -lfftw3 
 
 dspserver_SOURCES = main.c\
          ozy.c\
@@ -16,7 +16,7 @@ dspserver_SOURCES = main.c\
 buffer.h       \
 client.h       \
 codec2loc.h    \
-dttsp.h        \
+wdsp.h        \
 main.h         \
 ozy.h          \
 soundcard.h    \

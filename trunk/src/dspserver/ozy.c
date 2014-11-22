@@ -173,6 +173,7 @@ void* iq_thread(void* arg) {
     int iq_socket;
     struct sockaddr_in iq_addr;
     int iq_length = sizeof(iq_addr);
+    BUFFER_SDR buffer_sdr;
     BUFFER buffer;
     int on=1;
 
@@ -207,41 +208,97 @@ void* iq_thread(void* arg) {
         int offset = 0;
         unsigned long rx_sequence = 0;
 #ifdef SMALL_PACKETS
-        while(1) {
-            bytes_read=recvfrom(iq_socket,(char*)&buffer,sizeof(buffer),0,(struct sockaddr*)&iq_addr,(socklen_t *)&iq_length);
-            if(bytes_read<0) {
-                perror("recvfrom socket failed for iq buffer");
-                exit(1);
-            }
+        while(1) 
+        {
+            if (sdr1000)
+            {
+                bytes_read = recvfrom(iq_socket, (char*)&buffer_sdr, sizeof(buffer_sdr), 0, (struct sockaddr*)&iq_addr, (socklen_t *)&iq_length);
 
-            // SDR-1000 PA ADC values : added by KD0OSS
-              //  fprintf(stderr, "Fwd: %d  Ref: %d\n", buffer.adc[0], buffer.adc[1]);
-            txfwd = buffer.adc[0];
-            txref = buffer.adc[1];
+                // SDR-1000 PA ADC values : added by KD0OSS
+                //  fprintf(stderr, "Fwd: %d  Ref: %d\n", buffer_sdr.adc[0], buffer_sdr.adc[1]);
+                txfwd = buffer_sdr.adc[0];
+                txref = buffer_sdr.adc[1];
 
-            if (ozy_debug) {
-                fprintf(stderr,"rcvd UDP packet: sequence=%lld offset=%d length=%d\n",
-                        buffer.sequence, buffer.offset, buffer.length);
-            }
-
-            if(buffer.offset==0) {
-                offset=0;
-                rx_sequence=buffer.sequence;
-                // start of a frame
-                memcpy((char *)&input_buffer[buffer.offset/4],(char *)&buffer.data[0],buffer.length);
-                offset+=buffer.length;
-            } else {
-                if((rx_sequence==buffer.sequence) && (offset==buffer.offset)) {
-                    memcpy((char *)&input_buffer[buffer.offset/4],(char *)&buffer.data[0],buffer.length);
-                    offset+=buffer.length;
-                    if((hpsdr && (offset==(BUFFER_SIZE*3*4))) || (!hpsdr && (offset==(BUFFER_SIZE*2*4)))) {
-                        offset=0;
-                        break;
-                    }
-                } else {
-                    fprintf(stderr,"missing IQ frames\n");
+                if (bytes_read < 0) 
+                {
+                    perror("recvfrom socket failed for iq buffer");
+                    exit(1);
                 }
-            } // if(buffer.offset==0)
+
+                if (ozy_debug) 
+                {
+                    fprintf(stderr,"rcvd UDP packet: sequence=%lld offset=%d length=%d\n",
+                        buffer_sdr.sequence, buffer_sdr.offset, buffer_sdr.length);
+                }
+
+                if (buffer_sdr.offset == 0) 
+                {
+                    offset=0;
+                    rx_sequence=buffer_sdr.sequence;
+                    // start of a frame
+                    memcpy((char *)&input_buffer[buffer_sdr.offset/4], (char *)&buffer_sdr.data[0], buffer_sdr.length);
+                    offset+=buffer_sdr.length;
+                } 
+                else 
+                {
+                    if ((rx_sequence == buffer_sdr.sequence) && (offset == buffer_sdr.offset)) 
+                    {
+                        memcpy((char *)&input_buffer[buffer_sdr.offset/4], (char *)&buffer_sdr.data[0], buffer_sdr.length);
+                        offset+=buffer_sdr.length;
+                        if (offset == (BUFFER_SIZE*2*4)) 
+                        {
+                            offset=0;
+                            break;
+                        }
+                    } 
+                    else 
+                    {
+                        fprintf(stderr,"missing IQ frames\n");
+                    }
+                } // if(buffer.offset==0)
+            }
+            else
+            {
+                bytes_read = recvfrom(iq_socket, (char*)&buffer, sizeof(buffer), 0, (struct sockaddr*)&iq_addr, (socklen_t *)&iq_length);
+
+                if (bytes_read < 0) 
+                {
+                    perror("recvfrom socket failed for iq buffer");
+                    exit(1);
+                }
+
+                if (ozy_debug) 
+                {
+                    fprintf(stderr,"rcvd UDP packet: sequence=%lld offset=%d length=%d\n",
+                        buffer.sequence, buffer.offset, buffer.length);
+                }
+
+                if (buffer.offset == 0) 
+                {
+                    offset=0;
+                    rx_sequence=buffer.sequence;
+                    // start of a frame
+                    memcpy((char *)&input_buffer[buffer.offset/4], (char *)&buffer.data[0], buffer.length);
+                    offset+=buffer.length;
+                } 
+                else 
+                {
+                    if ((rx_sequence == buffer.sequence) && (offset == buffer.offset)) 
+                    {
+                        memcpy((char *)&input_buffer[buffer.offset/4], (char *)&buffer.data[0], buffer.length);
+                        offset+=buffer.length;
+                        if ((hpsdr && (offset == (BUFFER_SIZE*3*4))) || (!hpsdr && (offset == (BUFFER_SIZE*2*4)))) 
+                        {
+                            offset=0;
+                            break;
+                        }
+                    } 
+                    else 
+                    {
+                        fprintf(stderr,"missing IQ frames\n");
+                    }
+                } // if(buffer.offset==0)
+            }            
         } // end while(1)
 #else
         if (hpsdr)

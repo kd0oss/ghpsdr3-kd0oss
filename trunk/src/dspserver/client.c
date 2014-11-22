@@ -73,7 +73,7 @@
 #include "soundcard.h"
 #include "dttsp.h"
 #include "buffer.h"
-#include "codec2loc.h"
+//#include "codec2loc.h"
 #include "register.h"
 #include "rtp.h"
 #include "G711A.h"
@@ -236,7 +236,7 @@ void Mic_stream_queue_add(){
     struct audio_entry *item;
     int i;
 
-    if (audiostream_conf.micEncoding == MIC_ENCODING_CODEC2){
+/*    if (audiostream_conf.micEncoding == MIC_ENCODING_CODEC2){
         for (i=0; i < MIC_NO_OF_FRAMES; i++){
             bits = malloc(BITS_SIZE);
             memcpy(bits, &mic_buffer[i*BITS_SIZE], BITS_SIZE);
@@ -247,7 +247,7 @@ void Mic_stream_queue_add(){
             TAILQ_INSERT_TAIL(&Mic_audio_stream, item, entries);
             sem_post(&mic_semaphore);
         }
-    } else if (audiostream_conf.micEncoding == MIC_ENCODING_ALAW) {
+    } else */if (audiostream_conf.micEncoding == MIC_ENCODING_ALAW) {
         bits = malloc(MIC_ALAW_BUFFER_SIZE);
         memcpy(bits, mic_buffer, MIC_ALAW_BUFFER_SIZE);
         item = malloc(sizeof(*item));
@@ -548,7 +548,7 @@ void *tx_thread(void *arg){
     unsigned char *bits;
     struct audio_entry *item;
     // short codec2_buffer[CODEC2_SAMPLES_PER_FRAME];
-    short *codec2_buffer;  // samples_per_frame is  now a variable
+//    short *codec2_buffer;  // samples_per_frame is  now a variable
     int tx_buffer_counter = 0;
     int rc;
     int j, i;
@@ -563,21 +563,21 @@ void *tx_thread(void *arg){
     float *data_in, *data_out;
 
     SRC_DATA data;
-    void *mic_codec2 = (void *) codec2_create(CODEC2_MODE_3200);
+//    void *mic_codec2 = (void *) codec2_create(CODEC2_MODE_3200);
 
-    samples_per_frame = codec2_samples_per_frame( (struct CODEC2 *) mic_codec2 );
-    bits_per_frame = codec2_bits_per_frame( (struct CODEC2 *) mic_codec2 );
+//    samples_per_frame = codec2_samples_per_frame( (struct CODEC2 *) mic_codec2 );
+//    bits_per_frame = codec2_bits_per_frame( (struct CODEC2 *) mic_codec2 );
 
-    codec2_buffer = (short *) malloc( sizeof( short ) * samples_per_frame );
+//    codec2_buffer = (short *) malloc( sizeof( short ) * samples_per_frame );
 
-    if (samples_per_frame > MIC_ALAW_BUFFER_SIZE) {
-        data_in = (float *) malloc( sizeof( float ) * samples_per_frame * 2 );
-        data_out = (float *) malloc( sizeof( float ) * samples_per_frame * 24 );
-    }
-    else {
+//    if (samples_per_frame > MIC_ALAW_BUFFER_SIZE) {
+//        data_in = (float *) malloc( sizeof( float ) * samples_per_frame * 2 );
+//        data_out = (float *) malloc( sizeof( float ) * samples_per_frame * 24 );
+//    }
+//    else {
         data_in = (float *) malloc( sizeof( float ) * MIC_ALAW_BUFFER_SIZE * 2 );
         data_out = (float *) malloc( sizeof( float ) * MIC_ALAW_BUFFER_SIZE * 24 );
-    }
+//    }
 
     sdr_log(SDR_LOG_INFO, "tx_thread STARTED\n");
 
@@ -592,7 +592,7 @@ void *tx_thread(void *arg){
             continue;
         }
         else {
-            if (audiostream_conf.micEncoding == MIC_ENCODING_CODEC2){
+        /*    if (audiostream_conf.micEncoding == MIC_ENCODING_CODEC2){
                 bits = item->buf;	// each frame is BITS_SIZE long for Codec 2
                 // process codec2 encoded mic_buffer
                 codec2_decode(mic_codec2, codec2_buffer, bits);
@@ -602,17 +602,19 @@ void *tx_thread(void *arg){
                     data_in [j*2] = data_in [j*2+1]   = (float)codec2_buffer[j]/32767.0;
                 }
             }
-            else {
+            else */{
                 for (j=0; j < MIC_ALAW_BUFFER_SIZE; j++){
                     data_in[j*2] = data_in[j*2+1] = (float)G711A_decode(item->buf[j])/32767.0;
                 }
             }
             data.data_in = data_in;
-            data.input_frames = (audiostream_conf.micEncoding == MIC_ENCODING_CODEC2) ?
-                        samples_per_frame : MIC_ALAW_BUFFER_SIZE;
+//            data.input_frames = (audiostream_conf.micEncoding == MIC_ENCODING_CODEC2) ?
+//                        samples_per_frame : MIC_ALAW_BUFFER_SIZE;
+            data.input_frames = MIC_ALAW_BUFFER_SIZE;
             data.data_out = data_out;
-            data.output_frames = (audiostream_conf.micEncoding == MIC_ENCODING_CODEC2) ?
-                        samples_per_frame*24 : MIC_ALAW_BUFFER_SIZE*24 ;
+//            data.output_frames = (audiostream_conf.micEncoding == MIC_ENCODING_CODEC2) ?
+//                        samples_per_frame*24 : MIC_ALAW_BUFFER_SIZE*24 ;
+            data.data_out = MIC_ALAW_BUFFER_SIZE*24;
             data.src_ratio = mic_src_ratio;
             data.end_of_input = 0;
 
@@ -650,7 +652,7 @@ void *tx_thread(void *arg){
         } // end else item
     } // end while
 
-    codec2_destroy(mic_codec2);
+ //   codec2_destroy(mic_codec2);
     //  fclose(fp); //KD0OSS
 
 }
@@ -1190,8 +1192,9 @@ void readcb(struct bufferevent *bev, void *ctx){
          * as possible. */
         if(!slave && strncmp(cmd,"mic", 3)==0){		// This is incoming microphone data, binary data after "mic "
             memcpy(mic_buffer, &message[4],
-                   ((audiostream_conf.micEncoding == MIC_ENCODING_CODEC2) ?
-                        MIC_BUFFER_SIZE : MIC_ALAW_BUFFER_SIZE));
+ //                  ((audiostream_conf.micEncoding == MIC_ENCODING_CODEC2) ?
+ //                       MIC_BUFFER_SIZE : MIC_ALAW_BUFFER_SIZE));
+            MIC_ALAW_BUFFER_SIZE);
             Mic_stream_queue_add();
             continue;
         }
@@ -1482,10 +1485,10 @@ void readcb(struct bufferevent *bev, void *ctx){
             }
             if (ntok >= 4) {
                 micEncoding = atoi(tokens[3]);
-                if (micEncoding != MIC_ENCODING_CODEC2 && micEncoding != MIC_ENCODING_ALAW) {
-                    sdr_log(SDR_LOG_INFO, "Invalid mic encoding: %d\n", micEncoding);
+//                if (micEncoding != MIC_ENCODING_CODEC2 && micEncoding != MIC_ENCODING_ALAW) {
+//                    sdr_log(SDR_LOG_INFO, "Invalid mic encoding: %d\n", micEncoding);
                     micEncoding = MIC_ENCODING_ALAW;
-                }
+//                }
             }
 
             sem_wait(&audiostream_sem);

@@ -74,8 +74,8 @@ case $build_cpu in
 
     armv7l)
       AC_MSG_NOTICE([Platform: ARM 7])
-      CFLAGS="-O3 -pipe -march=armv7 -mfpu=neon -fno-tree-vectorize -fopenmp"
-      CXXFLAGS="-O3 -pipe -march=armv7 -mfpu=neon -fno-tree-vectorize -fopenmp"
+      CFLAGS="-O3 -pipe -mfpu=neon -fno-tree-vectorize -fopenmp"
+      CXXFLAGS="-O3 -pipe  -mfpu=neon -fno-tree-vectorize -fopenmp"
       export CFLAGS
       export CXXFLAGS
       AC_MSG_NOTICE([${CFLAGS}])
@@ -89,7 +89,7 @@ dnl #AC_PROG_RANLIB
 
 case $host in
 *-linux*)
-   CFLAGS="$CFLAGS -I/usr/include/libusb-1.0/"
+   CFLAGS="$CFLAGS -I/usr/include/libusb-1.0/ -I/usr/local/include/"
    ;;
 esac
 
@@ -124,8 +124,8 @@ AC_SEARCH_LIBS([Pa_Initialize], [portaudio],[have_portaudio2=yes])
 have_fftw3=no
 AC_SEARCH_LIBS([fftwf_malloc], [fftw3f],[have_fftw3=yes])
 
-have_codec2=no
-AC_SEARCH_LIBS([codec2_create], [codec2],[have_codec2=yes])
+#have_codec2=no
+#AC_SEARCH_LIBS([codec2_create], [codec2],[have_codec2=yes])
 
 have_pulse_simple=no
 AC_SEARCH_LIBS([pa_simple_new], [pulse-simple],[have_pulse_simple=yes])
@@ -207,17 +207,17 @@ if test "x${have_fftw3}" = xno; then
 fi
 
 
-if test "x${have_codec2}" = xyes; then
-    AC_CHECK_HEADERS([codec2.h], [], [have_codec2=no])
-fi
+#if test "x${have_codec2}" = xyes; then
+#    AC_CHECK_HEADERS([codec2/codec2.h], [], [have_codec2=no])
+#fi
 
-if test "x${have_codec2}" = xno; then
-    AC_MSG_ERROR([
------------------------------------
-  The codec2 library and header file required to build ghpsdr3.
------------------------------------])
+#if test "x${have_codec2}" = xno; then
+#    AC_MSG_ERROR([
+#-----------------------------------
+#  The codec2 library and header file required to build ghpsdr3.
+#-----------------------------------])
 
-fi
+#fi
 
 
 if test "x${have_pulse_simple}" = xyes; then
@@ -342,7 +342,7 @@ fi
 if test "x${have_samplerate}" = xno; then
     AC_MSG_ERROR([
 -----------------------------------
-  The samplerate library and header file required to build ghpsdr3.
+  The samplerate library and header file is required to build ghpsdr3.
 -----------------------------------])
 
 fi
@@ -351,10 +351,17 @@ if test "x${have_ortp}" = xyes; then
     AC_CHECK_HEADERS([ortp/ortp.h], [], [have_ortp=no])
 fi
 
+if test "x${have_ortp}" = xyes; then
+    AC_LINK_IFELSE(
+        [AC_LANG_CALL([], [rtp_session_set_pktinfo])],
+        [AC_DEFINE(HAVE_RTCP_ORTP, 1, [have ORTP with RTCP functionality])],
+        [])
+fi
+
 if test "x${have_ortp}" = xno; then
     AC_MSG_ERROR([
 -----------------------------------
-  The ortp library and header file required to build ghpsdr3.
+  The ortp library and header file is required to build ghpsdr3.
 -----------------------------------])
 
 fi
@@ -363,7 +370,7 @@ fi
 if test "x${have_gomp}" = xno; then
     AC_MSG_ERROR([
 -----------------------------------
-  The gomp library required to build ghpsdr3.
+  The gomp library is required to build ghpsdr3.
 -----------------------------------])
 
 fi
@@ -483,6 +490,8 @@ AC_CONFIG_FILES([Makefile
                  trunk/src/hiqsdr/Makefile
                  trunk/src/sdriq/Makefile
                  trunk/src/sdr1000/Makefile
+                 trunk/src/wdsp/Makefile
+                 trunk/src/wdspserver/Makefile
 		 ])
 
 
@@ -503,7 +512,7 @@ Prefix: '${prefix}'.
 Compiler: '${CC} ${CFLAGS} ${CPPFLAGS}'
 Now type 'make @<:@<target>@:>@'
 
- where the otpional <target> is:
+ where the optional <target> is:
 
     all           - build all binaries
     install       - install everything
