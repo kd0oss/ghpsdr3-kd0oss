@@ -62,8 +62,8 @@ AC_MSG_RESULT([QT_ADDITIONAL_LDFLAG: $QT_ADDITIONAL_LDFLAG])
 # Check both libraries binary and header files
 #
 
-have_codec2=no
-AC_SEARCH_LIBS([codec2_create], [codec2],[have_codec2=yes])
+#have_codec2=no
+#AC_SEARCH_LIBS([codec2_create], [codec2],[have_codec2=yes])
 
 have_samplerate=no
 AC_SEARCH_LIBS([src_new], [samplerate],[have_samplerate=yes])
@@ -71,17 +71,17 @@ AC_SEARCH_LIBS([src_new], [samplerate],[have_samplerate=yes])
 have_ortp=no
 AC_SEARCH_LIBS([ortp_init], [ortp],[have_ortp=yes])
 
-if test "x${have_codec2}" = xyes; then
-    AC_CHECK_HEADERS([codec2.h], [], [have_codec2=no])
-fi
+#if test "x${have_codec2}" = xyes; then
+#    AC_CHECK_HEADERS([codec2.h], [], [have_codec2=no])
+#fi
 
-if test "x${have_codec2}" = xno; then
-    AC_MSG_ERROR([
------------------------------------
-  The codec2 library and header file required to build ghpsdr3.
------------------------------------])
+#if test "x${have_codec2}" = xno; then
+#    AC_MSG_ERROR([
+#-----------------------------------
+#  The codec2 library and header file required to build ghpsdr3.
+#-----------------------------------])
 
-fi
+#fi
 
 if test "x${have_samplerate}" = xyes; then
     AC_CHECK_HEADERS([samplerate.h], [], [have_samplerate=no])

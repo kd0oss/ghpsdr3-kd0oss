@@ -15,7 +15,6 @@ dspserver_SOURCES = main.c\
 	 audiostream.h  \
 buffer.h       \
 client.h       \
-codec2loc.h    \
 dttsp.h        \
 main.h         \
 ozy.h          \
@@ -27,6 +26,7 @@ rtp.h          \
 rtp.c          \
 G711A.h        \
 G711A.c
+#codec2loc.h 
 
 libsdrutil_a_SOURCES = util.h         \
                        util.c
