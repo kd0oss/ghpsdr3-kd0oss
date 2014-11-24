@@ -89,7 +89,11 @@ RtpSession *rtpSession;
     rtp_session_set_scheduling_mode(rtpSession,TRUE);
     rtp_session_set_blocking_mode(rtpSession,FALSE);
 
+#ifdef HAVE_RTCP_ORTP
+    rtp_session_set_local_addr(rtpSession,"0.0.0.0",LOCAL_RTP_PORT, LOCAL_RTP_PORT);
+#else
     rtp_session_set_local_addr(rtpSession,"0.0.0.0",LOCAL_RTP_PORT);
+#endif
     rtp_session_set_remote_addr(rtpSession, remote_addr, remote_port );
 
     rtp_session_set_connected_mode(rtpSession,TRUE);
