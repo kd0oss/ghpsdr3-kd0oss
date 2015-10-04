@@ -9,7 +9,7 @@ AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects])
 
 AC_CONFIG_SRCDIR([README])
 AC_CONFIG_HEADERS([config.h])
@@ -489,7 +489,6 @@ AC_CONFIG_FILES([Makefile
                  trunk/src/pylauncher/Makefile
                  trunk/src/hiqsdr/Makefile
                  trunk/src/sdriq/Makefile
-                 trunk/src/sdr1000/Makefile
                  trunk/src/wdsp/Makefile
                  trunk/src/wdspserver/Makefile
 		 ])
