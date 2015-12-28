@@ -25,36 +25,45 @@
 
 #include "FiltersBase.h"
 
-FiltersBase::FiltersBase() {
+FiltersBase::FiltersBase()
+{
 }
 
-FiltersBase::FiltersBase(const FiltersBase& orig) {
+FiltersBase::FiltersBase(const FiltersBase& orig)
+{
 }
 
-FiltersBase::~FiltersBase() {
+FiltersBase::~FiltersBase()
+{
 }
 
-int FiltersBase::getSelected() {
+int FiltersBase::getSelected()
+{
     return currentFilter;
 }
 
-void FiltersBase::selectFilter(int f) {
+void FiltersBase::selectFilter(int f)
+{
     currentFilter=f;
 }
 
-QString FiltersBase::getText(int f) {
+QString FiltersBase::getText(int f)
+{
     return filters[f].getText();
 }
 
-QString FiltersBase::getText() {
+QString FiltersBase::getText()
+{
     return filters[currentFilter].getText();
 }
 
-int FiltersBase::getLow() {
+int FiltersBase::getLow()
+{
     return filters[currentFilter].getLow();
 }
 
-int FiltersBase::getHigh() {
+int FiltersBase::getHigh()
+{
     return filters[currentFilter].getHigh();
 }
 

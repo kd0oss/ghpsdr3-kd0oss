@@ -45,7 +45,8 @@ class Ctl : public QFrame
 public:
     explicit Ctl(QWidget *parent = 0);
     ~Ctl();
-    int getTxPwr();
+    double getTxPwr();
+    double getTunePwr();
     void clearMoxBtn();
     void RigCtlTX(bool rigctlptt);
     int audioGain;
@@ -60,8 +61,7 @@ public:  // needed in Qt 4.x where signals means "protected" - IW0HDV
 #endif
     void pttChange(int caller, bool ptt);//0 = MOX, 1 = Tune, 2 = VOX, 3 = Extern H'ware
     void pwrSlider_valueChanged(double pwr);
-//    void testBtnClick(bool state);
-//    void testSliderChange(int value);
+    void tunePwrSlider_valueChanged(double pwr);
     void masterBtnClicked(void);
     void audioMuted(bool);  // KD0OSS
     void audioGainChanged(void); // KD0OSS
@@ -76,17 +76,8 @@ private slots:
     void on_btnMox_clicked(bool checked);
     void on_btnTune_clicked(bool checked);
     void on_pwrSlider_valueChanged(int value);
-//    void on_checkBox_stateChanged(int arg1);
-//    void on_pwrSlider_2_valueChanged(int value);
-//    void on_spinBox_valueChanged(int arg1);
+    void on_tunePwrSlider_valueChanged(int value);
     void on_btnMaster_clicked(void);
-
-//    void on_pushButton_pressed();
-
-//    void on_pushButton_released();
-
-//    void on_pushButton_toggled(bool checked);
-
     void on_btnMute_clicked(bool checked); // KD0OSS
     void on_audioSlider_valueChanged(int value); // KD0OSS
     void setAudioSlider(int); // KD0OSS

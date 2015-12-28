@@ -5,7 +5,8 @@
 #define CENTER_X 75
 #define CENTER_Y 85
 
-Meter::Meter(QString title, short mtype) {
+Meter::Meter(QString title, short mtype)
+{
     image=new QImage(150,56,QImage::Format_ARGB32);
     image->fill(0xFFFFFFFF);
 
@@ -127,7 +128,8 @@ Meter::Meter(QString title, short mtype) {
     painter.drawText(0,0,image->width(),image->height(),Qt::AlignBottom||Qt::AlignHCenter,title);
 }
 
-void Meter::calculateLine(int dbm, double minRadius, double maxRadius) {
+void Meter::calculateLine(int dbm, double minRadius, double maxRadius)
+{
     double degrees = -121-(dbm+121);
     double radians = degrees*(3.14159265358979323846/180.0);
     double sine   = sin(radians);
@@ -141,7 +143,8 @@ void Meter::calculateLine(int dbm, double minRadius, double maxRadius) {
 
 }
 
-void Meter::calculateNeedle(int dbm, double minRadius, double maxRadius) {
+void Meter::calculateNeedle(int dbm, double minRadius, double maxRadius)
+{
     Calc calc;
     double degrees;
 
@@ -163,7 +166,8 @@ void Meter::calculateNeedle(int dbm, double minRadius, double maxRadius) {
 
 }
 
-QImage Meter::getImage(int dbm) {
+QImage Meter::getImage(int meter1, int meter2)
+{
     QImage qImage(*image);
     QPainter painter(&qImage);
     Calc calc;
@@ -172,17 +176,18 @@ QImage Meter::getImage(int dbm) {
 
     if (type == POWMETER)
     {
-        calculateNeedle(calc.PAPower((dbm & 0xff00) >> 8),0,75);
+//        calculateNeedle(calc.PAPower((dbm & 0xff00) >> 8),0,75);
+        calculateNeedle(calc.PAPower(meter1), 0, 75);
         painter.drawLine(dxmin, dymin, dxmax, dymax);
         painter.setPen(Qt::black);
-        strDbm.sprintf("%1.1f SWR  %2.1f W", calc.SWR((dbm & 0xff00) >> 8, dbm & 0x00ff), calc.PAPower((dbm & 0xff00) >> 8));
+        strDbm.sprintf("%1.1f SWR  %2.1f W", calc.SWR(meter1, meter2), calc.PAPower(meter1));
     }
     else
     {
-        calculateNeedle(dbm,0,75);
+        calculateNeedle(meter1, 0, 75);
         painter.drawLine(dxmin, dymin, dxmax, dymax);
         painter.setPen(Qt::black);
-        strDbm.sprintf("%d dBm",dbm);
+        strDbm.sprintf("%d dBm", meter1);
     }
     QRectF r1(image->width()-120, image->height()-15, 105, 20);
     painter.drawText(r1,Qt::AlignRight,strDbm);

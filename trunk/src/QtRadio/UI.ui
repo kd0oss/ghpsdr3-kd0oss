@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1016</width>
+    <width>1063</width>
     <height>470</height>
    </rect>
   </property>
@@ -472,7 +472,7 @@
         <widget class="Ctl" name="ctlFrame">
          <property name="minimumSize">
           <size>
-           <width>240</width>
+           <width>287</width>
            <height>118</height>
           </size>
          </property>
@@ -516,7 +516,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1016</width>
+     <width>1063</width>
      <height>20</height>
     </rect>
    </property>

@@ -304,6 +304,7 @@ public slots:
     void vfoStepBtnClicked(int direction);
     void pttChange(int caller, bool ptt);
     void pwrSlider_valueChanged(double pwr);
+    void tunePwrSlider_valueChanged(double pwr);
     void printStatusBar(QString message);
  //   void setRemote(char* host,int port);
     void slaveSetMode(int newmode);
@@ -320,8 +321,6 @@ public slots:
     void setRxIQPhase(double value); //KD0OSS
     void setRxIQGain(double value); //KD0OSS
     void cwPitchChanged(int cwPitch);
-//    void testSliderChange(int value);
-//    void testButtonClick(bool state);
     void resetbandedges(double offset);
 
     void hardware (QString);
@@ -372,7 +371,6 @@ private:
     AudioInput* audioinput;
     int mic_buffer_count;       // counter of mic_buffer, to encode if reaches CODEC2_SAMPLE_PER_FRAME
     int mic_frame_count;        // counter of mic_buffer, to encode enough frames before sending
-//    struct CODEC2 * mic_codec2;
 
 
     qint16 mic_buffer[MIC_BUFFER_SIZE];

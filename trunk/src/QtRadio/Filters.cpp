@@ -28,41 +28,50 @@
 #include "Mode.h"
 #include "FiltersBase.h"
 
-Filters::Filters() {
+Filters::Filters()
+{
     currentFilters=NULL;
 }
 
-Filters::Filters(const Filters& orig) {
+Filters::Filters(const Filters& orig)
+{
 }
 
-Filters::~Filters() {
+Filters::~Filters()
+{
 }
 
-void Filters::selectFilters(FiltersBase* filters) {
+void Filters::selectFilters(FiltersBase* filters)
+{
     FiltersBase* oldFilters=currentFilters;
     currentFilters=filters;
     qDebug()<<Q_FUNC_INFO<<":   Connecting to UI::filtersChanged. currentFilters = "<<currentFilters->getSelected();
     emit filtersChanged(oldFilters,currentFilters);
 }
 
-void Filters::selectFilter(int f) {
+void Filters::selectFilter(int f)
+{
     int previousFilter=currentFilters->getSelected();
     currentFilters->selectFilter(f);
     emit filterChanged(previousFilter,f);
 }
 
-int Filters:: getFilter() {
+int Filters:: getFilter()
+{
     return currentFilters->getSelected();
 }
 
-int Filters::getLow() {
+int Filters::getLow()
+{
     return currentFilters->getLow();
 }
 
-int Filters::getHigh() {
+int Filters::getHigh()
+{
     return currentFilters->getHigh();
 }
 
-QString Filters::getText() {
+QString Filters::getText()
+{
     return currentFilters->getText();
 }

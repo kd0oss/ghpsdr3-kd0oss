@@ -25,9 +25,7 @@
 #include "ui_ctl.h"
 #include <QDebug>
 
-Ctl::Ctl(QWidget *parent) :
-    QFrame(parent),
-    ui(new Ui::Ctl)
+Ctl::Ctl(QWidget *parent):QFrame(parent), ui(new Ui::Ctl)
 {
     ui->setupUi(this);
     micBar = ui->MicProgressBar;
@@ -37,12 +35,11 @@ Ctl::Ctl(QWidget *parent) :
     audioGain = 100;
     ui->audioSlider->setValue(audioGain);
     ui->pwrSlider->setValue(moxPwr);
+    ui->tunePwrSlider->setValue(TunePwr);
 
     HideTX(false); // Hide buttons because we have not connected to anything yet
     connect(this, SIGNAL(audioGainInitalized(int)), this, SLOT(setAudioSlider(int)));
     connect(this, SIGNAL(setAudioMuted(bool)), this, SLOT(setAudioMute(bool)));
-    //ui->pwrSlider_2->setValue(0);
-    //ui->spinBox->setMaximum(100);
 }
 
 Ctl::~Ctl()
@@ -55,131 +52,105 @@ void Ctl::on_btnMox_clicked(bool checked)
     bool ptt;
 
     ui->btnTune->setChecked(false); //Override the tune button
-    if (checked) { //We are going from Rx to Tx
+    if (checked)
+    { //We are going from Rx to Tx
         ui->btnMox->setChecked(true);
         ptt = true;
         ui->pwrSlider->setValue(moxPwr);
     }
-    else {
+    else
+    {
         ui->btnMox->setChecked(false);
         ptt = false;
         ui->MicProgressBar->setValue(0);
     }
     emit pttChange(0, ptt);
-}
+} // end on_btnMox_clicked
+
 
 void Ctl::on_btnTune_clicked(bool checked)
 {
     bool ptt;
 
     ui->btnMox->setChecked(false); //Override the MOX button
-    if(checked) { //We are going from Rx to Tx
+    if(checked)
+    { //We are going from Rx to Tx
         ui->btnTune->setChecked(true);
         ptt = true;
-        ui->pwrSlider->setValue(TunePwr);
+        ui->tunePwrSlider->setValue(TunePwr);
     }
-    else {
+    else
+    {
         ui->btnTune->setChecked(false);
         ptt = false;
     }
     emit pttChange(1, ptt);
-}
+} // end on_btnTune_clicked
+
 
 void Ctl::on_pwrSlider_valueChanged(int value)
 {
-    if(!ui->btnTune->isChecked()) {
-        moxPwr = ui->pwrSlider->value(); //Do nothing until Tx power level adj written for DttSP
-        emit pwrSlider_valueChanged(((double)moxPwr)/1000); //KD0OSS
-    } else if(ui->btnTune->isChecked()) {
-        TunePwr = ui->pwrSlider->value();
-        emit pwrSlider_valueChanged(((double)TunePwr)/1000); //KD0OSS
-    }
-}
+    moxPwr = ui->pwrSlider->value(); //Do nothing until Tx power level adj written for DttSP
+    emit pwrSlider_valueChanged(((double)moxPwr)/1000); //KD0OSS
+} // end on_pwrSlider_valueChanged
 
-int Ctl::getTxPwr()
+
+double Ctl::getTxPwr()
 {
-    return ui->pwrSlider->value();
-}
+    return (double)ui->pwrSlider->value()/1000;
+} // end getTxPwr
 
-void Ctl::update_mic_level(qreal level){
+
+void Ctl::on_tunePwrSlider_valueChanged(int value)
+{
+    TunePwr = ui->tunePwrSlider->value();
+    emit tunePwrSlider_valueChanged(((double)TunePwr)/1000); //KD0OSS
+} // end on_tunePwrSlider_valueChanged
+
+
+double Ctl::getTunePwr()
+{
+    return (double)ui->tunePwrSlider->value()/1000;
+} // end getTunePwr
+
+
+void Ctl::update_mic_level(qreal level)
+{
     ui->MicProgressBar->setValue(100*level);
-}
+} // end update_mic_level
+
 
 void Ctl::clearMoxBtn()
 {
     ui->btnMox->setChecked(false);
     ui->btnTune->setChecked(false);
-}
+} // end clearMoxBtn
 
-void Ctl::HideTX(bool cantx){
-    if (cantx){
+
+void Ctl::HideTX(bool cantx)
+{
+    if (cantx)
+    {
         ui->btnMox->setEnabled(true);
         ui->btnTune->setEnabled(true);
-    }else{
+    }
+    else
+    {
         clearMoxBtn();
         ui->btnMox->setEnabled(false);
         ui->btnTune->setEnabled(false);
     }
-}
+} // end HideTX
 
 
-/*
-void Ctl::on_checkBox_stateChanged(int arg1)
+void Ctl::RigCtlTX(bool rigctlptt)
 {
-    if(ui->checkBox->isChecked()){
-        ui->pushButton->setCheckable(true);
-    } else {
-        ui->pushButton->setCheckable(false);
-    }
-}
-
-void Ctl::on_pwrSlider_2_valueChanged(int value)
-{
-    if(ui->spinBox->value()!=value) ui->spinBox->setValue(value);
-    emit testSliderChange(value);
-    qDebug()<<Q_FUNC_INFO<<":   The value of slider = "<<value;
-}
-
-void Ctl::on_spinBox_valueChanged(int arg1)
-{
-    if(ui->pwrSlider_2->value()!=arg1) {
-        ui->pwrSlider_2->setValue(arg1);
-    } else {
-        emit testSliderChange(arg1);
-        qDebug()<<Q_FUNC_INFO<<":   The value of slider = "<<arg1;
-    }
-}
-
-void Ctl::on_pushButton_pressed()
-{
-    if(!ui->pushButton->isCheckable()) {
-//        qDebug()<<Q_FUNC_INFO<<":   The state of the pushbutton is "<<true;
-        emit testBtnClick(true);
-    }
-}
-
-void Ctl::on_pushButton_released()
-{
-    if(!ui->pushButton->isCheckable()) {
-//        qDebug()<<Q_FUNC_INFO<<":   The state of the pushbutton is "<<false;
-        emit testBtnClick(false);
-    }
-}
-
-void Ctl::on_pushButton_toggled(bool checked)
-{
-//    qDebug()<<Q_FUNC_INFO<<":   The state of the pushbutton is "<<checked;
-    emit testBtnClick(checked);
-}
-*/
-
-void Ctl::RigCtlTX(bool rigctlptt){
-    if (rigctlptt && ui->btnMox->isEnabled()){
+    if (rigctlptt && ui->btnMox->isEnabled())
         on_btnMox_clicked(true);
-    }else{
+    else
         on_btnMox_clicked(false);
-      }
-}
+} // end RigCtlTX
+
 
 void Ctl::loadSettings(QSettings *settings)
 {
@@ -188,7 +159,9 @@ void Ctl::loadSettings(QSettings *settings)
     TunePwr = settings->value("tunePwr",1).toInt();
     settings->endGroup();
     ui->pwrSlider->setValue(moxPwr); // KD0OSS
-}
+    ui->tunePwrSlider->setValue(TunePwr); // KD0OSS
+} // end loadSettings
+
 
 void Ctl::saveSettings(QSettings *settings)
 {
@@ -196,32 +169,37 @@ void Ctl::saveSettings(QSettings *settings)
     settings->setValue("moxPwr", moxPwr);
     settings->setValue("tunePwr", TunePwr);
     settings->endGroup();
-}
+} // end saveSettings
+
 
 void Ctl::on_btnMaster_clicked()
 {
     emit masterBtnClicked();
-}
+} // end on_btnMaster_clicked
+
 
 void Ctl::on_btnMute_clicked(bool checked)
 {
     ui->audioSlider->setEnabled(!checked);
     emit audioMuted(checked);
-}
+} // end on_btnMute_clicked
+
 
 void Ctl::on_audioSlider_valueChanged(int value)
 {
     audioGain = value;
     emit audioGainChanged();
-}
+} // end on_audioSlider_valueChanged
+
 
 void Ctl::setAudioSlider(int gain)
 {
     ui->audioSlider->setValue(gain);
-}
+} //end setAudioSlider
+
 
 void Ctl::setAudioMute(bool muted)
 {
     ui->btnMute->setChecked(muted);
     ui->audioSlider->setEnabled(!muted);
-}
+} // end setAudioMute

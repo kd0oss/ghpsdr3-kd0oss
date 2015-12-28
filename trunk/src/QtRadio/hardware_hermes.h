@@ -4,6 +4,7 @@
 #include "hardware.h"
 
 class QSlider;
+class QSettings;
 
 class HardwareHermes: public DlgHardware
 { 
@@ -32,6 +33,7 @@ private:
    QSlider *pAttSlider;
    QSlider *pTxSlider;
    QSlider *pTxLineInGain;
+   QSettings *settings;
 };
 
 #endif

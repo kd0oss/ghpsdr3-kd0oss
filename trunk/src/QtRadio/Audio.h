@@ -90,7 +90,9 @@ private:
 signals:
 };
 
-class Audio_processing : public QObject {
+
+class Audio_processing : public QObject
+{
     Q_OBJECT
 public:
     Audio_processing();
@@ -103,9 +105,7 @@ public slots:
 private:
     void aLawDecode(char* buffer,int length);
     void pcmDecode(char * buffer,int length);
-  //  void codec2Decode(char* buffer, int length);
     void resample(int no_of_samples);
-    void init_decodetable();
     float buffer_in[RESAMPLING_BUFFER_SIZE];
     float buffer_out[RESAMPLING_BUFFER_SIZE];
     short decodetable[256];
@@ -114,13 +114,14 @@ private:
     SRC_DATA sr_data;
     QHQueue<qint16> queue;
     QHQueue<qint16> *pdecoded_buffer;
- //   struct CODEC2 * codec2;
+    G711A g711a;
     int audio_channels;
     int audio_encoding;
 };
 
 
-class Audio : public QObject {
+class Audio : public QObject
+{
     Q_OBJECT
 public:
     Audio();

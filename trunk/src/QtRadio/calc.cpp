@@ -72,7 +72,7 @@ double Calc::ADCtodBm(int adc_data)
 double Calc::PAPower(int adc)
 {
     double v_out = ScaledVoltage(adc);
-    double powr = pow(v_out, 2)/50;
+    double powr = v_out/100.0; //pow(adc, 2)/50;
     powr = qMax(powr, 0.0);
     return powr;
 }

@@ -12,7 +12,7 @@
 class Meter {
 public:
     Meter(QString title, short mtype);
-    QImage getImage(int dbm);
+    QImage getImage(int meter1, int meter2);
 
 private:
     QImage* image;
@@ -21,8 +21,8 @@ private:
     int dxmin,dymin,dxmax,dymax;
     QString strDbm;
 
-    void calculateLine(int dbm,double minRadius,double maxRadius);
-    void calculateNeedle(int dbm,double minRadius,double maxRadius);
+    void calculateLine(int dbm, double minRadius, double maxRadius);
+    void calculateNeedle(int dbm, double minRadius, double maxRadius);
 };
 
 #endif // METER_H
