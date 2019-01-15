@@ -75,7 +75,7 @@ void HardwareSDR1000 :: attClicked(int newVal)
    if (attenuatorVal != newVal) {
       QString command;
       command.clear(); QTextStream(&command) << "*setattenuator " << newVal;
-      pConn->sendCommand (command);
+      //pConn->sendCommand (command);
       attenuatorVal = newVal;
    }
 }
@@ -85,7 +85,7 @@ void HardwareSDR1000 :: spurClicked(bool newVal)
    qDebug() << "Spur Reduction: " << newVal;
    QString command;
    command.clear(); QTextStream(&command) << "*setspurreduction " << newVal;
-   pConn->sendCommand (command);
+   //pConn->sendCommand (command);
 }
 
 void HardwareSDR1000 :: getPaFwd(void)
@@ -100,7 +100,7 @@ void HardwareSDR1000 :: getPA_ADC(unsigned char channel)
    qDebug() << "Get PA ADC: " << channel;
    QString command;
    command.clear(); QTextStream(&command) << "*getpaadc? " << channel;
-   pConn->sendCommand (command);
+   //pConn->sendCommand (command);
 }
 
 void HardwareSDR1000 :: processAnswer (QStringList list)

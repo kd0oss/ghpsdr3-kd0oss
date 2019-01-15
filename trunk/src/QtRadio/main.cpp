@@ -78,13 +78,13 @@ void myMessageOutput(QtMsgType type, const char *msg)
 }
 #endif
 
-int main(int argc, char *argv[]) {
-
-     if (getenv("QT_RADIO_NO_DEBUG")) fOutputDisabled = 1;
+int main(int argc, char *argv[])
+{
+    if (getenv("QT_RADIO_NO_DEBUG")) fOutputDisabled = 1;
 #if QT_VERSION >= 0x050000
-     qInstallMessageHandler(myMessageOutput);
+    qInstallMessageHandler(myMessageOutput);
 #else
-     qInstallMsgHandler(myMessageOutput);
+    qInstallMsgHandler(myMessageOutput);
 #endif
 
     // initialize resources, if needed

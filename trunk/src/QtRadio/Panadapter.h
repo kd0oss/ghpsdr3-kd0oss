@@ -49,6 +49,7 @@
 
 #include "Meter.h"
 #include "Connection.h"
+#include <omp.h>
 
 /****************** Added by KD0OSS **********************************************/
 
@@ -76,6 +77,7 @@ public:
     int cy;         // current row
     int ypos;
     QImage image;
+    bool bMox;
 
 public slots:
     void updateWaterfall(char*, int, int);
@@ -209,6 +211,7 @@ public:
     spectrumObject *spectrumPlot;
     waterfallObject *waterfallItem;
     int  itemType;
+    bool bMox; // KD0OSS
 };
 /********************************KD0OSS*****************************************/
 

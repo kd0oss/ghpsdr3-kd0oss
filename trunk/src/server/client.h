@@ -55,6 +55,36 @@ typedef struct _client {
     int mox;
 } CLIENT;
 
+enum COMMAND_SET {
+    CSFIRST = 0,
+    QCOMMAND,
+    QDSPVERSION,
+    QLOFFSET,
+    QCOMMPROTOCOL1,
+    QSERVER,
+    QMASTER,
+    QINFO,
+    STARCOMMAND,
+    STARHARDWARE,
+    STARGETSERIAL,
+    SETFPS,
+    SETCLIENT,
+    SETFREQ,
+    SETMODE,
+    SETFILTER,
+    SETENCODING,
+    SETRXOUTGAIN,
+    SETSUBRXOUTGAIN,
+    STARTAUDIO,
+    SETPAN,
+    SETANFVALS,
+    SETNRVALS,
+    SETRXBPASSWIN,
+    SETTXBPASSWIN,
+    SETWINDOW,
+    GETSPECTRIM
+};
+
 
 void* client_thread(void* arg);
 

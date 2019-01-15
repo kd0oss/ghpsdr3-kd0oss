@@ -83,7 +83,7 @@ HardwarePerseus :: HardwarePerseus (Connection *pC, QWidget *pW): DlgHardware (p
     // update the serial number in title bar
     QString command;
     command.clear(); QTextStream(&command) << "*getserial?";
-    pConn->sendCommand (command);
+//    pConn->sendCommand (command);
 
     // defaults
     ditherCB->setCheckState(Qt::Checked);  // dither ON
@@ -97,7 +97,7 @@ void HardwarePerseus :: attClicked(int state)
    qDebug() << "Attenuator: " << state << "dB";
    QString command;
    command.clear(); QTextStream(&command) << "*setattenuator " << state;
-   pConn->sendCommand (command);
+//   pConn->sendCommand (command);
 }
 
 void HardwarePerseus :: ditherChanged(int state)
@@ -105,14 +105,14 @@ void HardwarePerseus :: ditherChanged(int state)
    qDebug() << "Dither: " << state;
    QString command;
    command.clear(); QTextStream(&command) << "*dither " << ((state==Qt::Checked) ? "on" : "off") ;
-   pConn->sendCommand (command);
+//   pConn->sendCommand (command);
 }
 void HardwarePerseus :: preampChanged(int state)
 {   
    qDebug() << "Preamp: " << state;
    QString command;
    command.clear(); QTextStream(&command) << "*preamp " << ((state==Qt::Checked) ? "on" : "off") ;
-   pConn->sendCommand (command);
+//   pConn->sendCommand (command);
 }
 
 

@@ -59,7 +59,7 @@ HardwareSdriq :: HardwareSdriq (Connection *pC, QWidget *pW): DlgHardware (pC, p
     // update the serial number in title bar
     QString command;
     command.clear(); QTextStream(&command) << "*getserial?";
-    pConn->sendCommand (command);
+ //   pConn->sendCommand (command);
 
     // defaults
     att0Db->setChecked(true);              // attenuator 0 dB
@@ -70,7 +70,7 @@ void HardwareSdriq :: attClicked(int state)
    qDebug() << "Attenuator: " << state << "dB";
    QString command;
    command.clear(); QTextStream(&command) << "*setattenuator " << state;
-   pConn->sendCommand (command);
+//   pConn->sendCommand (command);
 }
 
 void HardwareSdriq :: processAnswer (QStringList list)

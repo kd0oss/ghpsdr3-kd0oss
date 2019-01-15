@@ -138,13 +138,16 @@ spectrumObject::spectrumObject(int width, int height){
     setZValue(1.0);
 }
 
-void spectrumObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+void spectrumObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
     // plot Panadapter
     painter->translate(0.5, 0.5);
     painter->setOpacity(0.9);
     painter->setPen(QPen(Qt::yellow, 1));
-    if(plot.count() == plotWidth) {
-        painter->drawPolyline(plot.constData(),plot.count());
+//    qDebug("PC: %d", plot.count());
+    if (plot.count() == plotWidth)
+    {
+        painter->drawPolyline(plot.constData(), plot.count());
     }
 }
 
@@ -155,6 +158,7 @@ QRectF spectrumObject::boundingRect() const
 
 PanadapterScene::PanadapterScene(QObject *parent) : QGraphicsScene(parent)
 {
+    bMox = false;
 }
 /***********************************KD0OSS******************************************/
 
@@ -1023,12 +1027,13 @@ void Panadapter::drawSquelch(void)
 
 void Panadapter::drawSpectrum(void)
 {
-    if(sampleRate==0) {
+    if (sampleRate == 0)
+    {
         qDebug() << "sampleRate is 0";
         return;
     }
-
     emit meterValue(meter, subrx_meter);
+//    qDebug() << "drawSpectrum";
 
     // KD0OSS ****************************************************
     if (panadapterScene->spectrumPlot != NULL)
@@ -1045,13 +1050,15 @@ void Panadapter::drawSpectrum(void)
     //************************************************************
 
     // show the subrx frequency
-    if(subRx) {
+    if (subRx)
+    {
         // show the frequency
         //  painter.setPen(QPen(Qt::green,1));
         //  painter.setFont(QFont("Verdana", 30));
     }
 
-    QTimer::singleShot(0,this,SLOT(update()));
+ //   QTimer::singleShot(0, this, SLOT(update()));
+    update();
 }
 
 void Panadapter::setZoom(int value){
@@ -1172,7 +1179,8 @@ void Panadapter::setFilter(QString f) {
     update();
 }
 
-void Panadapter::updateSpectrumFrame(char* header,char* buffer,int width) {
+void Panadapter::updateSpectrumFrame(char* header,char* buffer,int width)
+{
     int i;
     int version,subversion;
     int header_sampleRate;
@@ -1186,13 +1194,16 @@ void Panadapter::updateSpectrumFrame(char* header,char* buffer,int width) {
     subrx_meter=((header[7]&0xFF)<<8)+(header[8]&0xFF);
     header_sampleRate=((header[9]&0xFF)<<24)+((header[10]&0xFF)<<16)+((header[11]&0xFF)<<8)+(header[12]&0xFF);
 
-    if (version==2 && subversion>0) {
+    if (version==2 && subversion>0)
+    {
         // only in version 2.1 and above
         LO_offset=((header[13]&0xFF)<<8)+(header[14]&0xFF);
-    } else {
+    }
+    else
+    {
         LO_offset=0;
     }
-    //    qDebug("Meter: %d", meter);
+   //     qDebug("Meter: %d  SR: %ld  w: %d", meter, header_sampleRate, width);
 
     sampleRate = header_sampleRate;
     size = width;
@@ -1201,7 +1212,8 @@ void Panadapter::updateSpectrumFrame(char* header,char* buffer,int width) {
     lastSampRate = sampleRate;
 
     // do not rotate Panadapter display.  LO_offset rotation done in dspserver
-    for (i=0;i<width;i++) {
+    for (i=0;i<width;i++)
+    {
         samples[i] = (float)(samples[i] * avg - (buffer[i] & 0xFF))/(float)(avg+1);
         wsamples[i] = buffer[i];
     }
@@ -1215,7 +1227,8 @@ void Panadapter::updateSpectrumFrame(char* header,char* buffer,int width) {
         qDebug("Scene width: %d  ht: %d", width, height());
     }
     plot.clear();
-    for (i = 0; i < width; i++) {
+    for (i = 0; i < width; i++)
+    {
         plot << QPoint(i, (int)floor(((float) spectrumHigh - samples[i])*(float)(splitViewBoundary) / (float) (spectrumHigh - spectrumLow)));
     }
 
@@ -1282,12 +1295,12 @@ void Panadapter::addNotchFilter(int index)   // KD0OSS
     double audio_freq = abs((notchFilterFO[notchFilterIndex]/* - frequency*/)); // Convert to audio frequency in Hz
     command.clear();
     QTextStream(&command) << "setnotchfilter " << 0 << " " << index << " " << notchFilterBW[notchFilterIndex] << " " << audio_freq;
-    connection->sendCommand(command);
+//    connection->sendCommand(command);
     qDebug()<<Q_FUNC_INFO<<":   The command sent is "<< command;
 
     command.clear();
     QTextStream(&command) << "setnotchfilter " << 1 << " " << index << " " << notchFilterBW[notchFilterIndex] << " " << audio_freq;
-    connection->sendCommand(command);
+//    connection->sendCommand(command);
     qDebug()<<Q_FUNC_INFO<<":   The command sent is "<< command;
 
     enableNotchFilter(notchFilterIndex, true);
@@ -1320,12 +1333,12 @@ void Panadapter::updateNotchFilter(int index)   // KD0OSS
                 audio_freq = abs((notchFilterFO[i]/* - frequency*/)); // Convert to audio frequency in Hz
                 command.clear();
                 QTextStream(&command) << "editnotchfilter " << 0 << " " << i << " " << notchFilterBW[i] << " " << audio_freq;
-                connection->sendCommand(command);
+    //            connection->sendCommand(command);
                 qDebug()<<Q_FUNC_INFO<<":   The command sent is "<< command;
 
                 command.clear();
                 QTextStream(&command) << "editnotchfilter " << 1 << " " << i << " " << notchFilterBW[i] << " " << audio_freq;
-                connection->sendCommand(command);
+    //            connection->sendCommand(command);
                 qDebug()<<Q_FUNC_INFO<<":   The command sent is "<< command;
             }
         }
@@ -1344,12 +1357,12 @@ void Panadapter::updateNotchFilter(int index)   // KD0OSS
         audio_freq = abs((notchFilterFO[index]/* - frequency*/)); // Convert to audio frequency in Hz
         command.clear();
         QTextStream(&command) << "editnotchfilter " << 0 << " " << index << " " << notchFilterBW[index] << " " << audio_freq;
-        connection->sendCommand(command);
+ //       connection->sendCommand(command);
         qDebug()<<Q_FUNC_INFO<<":   The command sent is "<< command;
 
         command.clear();
         QTextStream(&command) << "editnotchfilter " << 1 << " " << index << " " << notchFilterBW[index] << " " << audio_freq;
-        connection->sendCommand(command);
+ //       connection->sendCommand(command);
         qDebug()<<Q_FUNC_INFO<<":   The command sent is "<< command;
     }
 }
@@ -1364,12 +1377,12 @@ void Panadapter::enableNotchFilter(bool enable)   // KD0OSS
         if (notchFilterBand[index] != band && enable) continue;
         command.clear();
         QTextStream(&command) << "enablenotchfilter " << 0 << " " << index << " " << enable;
-        connection->sendCommand(command);
+  //      connection->sendCommand(command);
         qDebug()<<Q_FUNC_INFO<<":   The command sent is "<< command;
 
         command.clear();
         QTextStream(&command) << "enablenotchfilter " << 1 << " " << index << " " << enable;
-        connection->sendCommand(command);
+  //      connection->sendCommand(command);
         qDebug()<<Q_FUNC_INFO<<":   The command sent is "<< command;
     }
     //emit enableNotchFilterSig(enable);
@@ -1383,12 +1396,12 @@ void Panadapter::enableNotchFilter(int index, bool enable)   // KD0OSS
     if (notchFilterBand[index] != band && enable) return;
     command.clear();
     QTextStream(&command) << "enablenotchfilter " << 0 << " " << index << " " << enable;
-    connection->sendCommand(command);
+//    connection->sendCommand(command);
     qDebug()<<Q_FUNC_INFO<<":   The command sent is "<< command;
 
     command.clear();
     QTextStream(&command) << "enablenotchfilter " << 1 << " " << index << " " << enable;
-    connection->sendCommand(command);
+ //   connection->sendCommand(command);
     qDebug()<<Q_FUNC_INFO<<":   The command sent is "<< command;
     //emit enableNotchFilterSig(enable);
 }
@@ -1417,6 +1430,7 @@ void Panadapter::deleteAllNotchFilters(void)   // KD0OSS
 
 void Panadapter::updateWaterfall(void)
 {
+    panadapterScene->waterfallItem->bMox = panadapterScene->bMox;
     panadapterScene->waterfallItem->updateWaterfall(wsamples, size, splitViewBoundary);
 }
 
@@ -1458,6 +1472,7 @@ waterfallObject::waterfallObject(int width, int height) {
 
 void waterfallObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     // plot waterfall
+    if (bMox) return;
     painter->translate(0.5, 0.5);
     painter->drawImage(0,ypos,image,0,cy,image.width(),image.height()/2,Qt::AutoColor);
     if (cy <= 0) cy = image.height()/2 - 1;
@@ -1493,12 +1508,14 @@ bool waterfallObject::getAutomatic() {
     return waterfallAutomatic;
 }
 
-void waterfallObject::updateWaterfall(char* buffer, int length, int starty) {
+void waterfallObject::updateWaterfall(char* buffer, int length, int starty)
+{
     int i;
     int x,y;
     int average=0;
 
-    if (samples!=NULL) {
+    if (samples != NULL)
+    {
         free(samples);
     }
 
@@ -1510,20 +1527,24 @@ void waterfallObject::updateWaterfall(char* buffer, int length, int starty) {
 
     // do not rotate spectrum display.  It is done by dspserver now
 #pragma omp parallel for schedule(static)
-    for(i=0;i<itemWidth;i++) {
+    for(i=0;i<itemWidth;i++)
+    {
         samples[i] = -(buffer[i] & 0xFF);
     }
 
     size = length;
     //   QTimer::singleShot(0,this,SLOT(updateWaterfall_2()));
 
-    if (image.width()!=itemWidth || (image.height()/2) != itemHeight) {
+    if (image.width()!=itemWidth || (image.height()/2) != itemHeight)
+    {
         qDebug() << "Waterfall::updateWaterfall " << size << "(" << itemWidth << ")," << itemHeight;
         image = QImage(itemWidth, itemHeight*2, QImage::Format_RGB32);
         cy = image.height()/2 - 1;
 #pragma omp parallel for schedule(static)
-        for (x = 0; x < itemWidth; x++) {
-            for (y = 0; y < image.height(); y++) {
+        for (x = 0; x < itemWidth; x++)
+        {
+            for (y = 0; y < image.height(); y++)
+            {
                 image.setPixel(x, y, 0xFF000000);
             }
         }
@@ -1531,7 +1552,8 @@ void waterfallObject::updateWaterfall(char* buffer, int length, int starty) {
 
     // draw the new line
 #pragma omp parallel for schedule(static)
-    for (x=0;x<size;x++){
+    for (x=0;x<size;x++)
+    {
         uint pixel = calculatePixel(samples[x]);
         image.setPixel(x,cy,pixel);
         image.setPixel(x,cy+(image.height()/2),pixel);
@@ -1539,7 +1561,8 @@ void waterfallObject::updateWaterfall(char* buffer, int length, int starty) {
         average+=samples[x];
     }
 
-    if (waterfallAutomatic) {
+    if (waterfallAutomatic)
+    {
         waterfallLow=(average/size)-10;
         waterfallHigh=waterfallLow+60;
     }

@@ -83,7 +83,7 @@ void Bandscope::disconnected(QString message) {
 void Bandscope::updateBandscope() {
     QString command;
     command.clear(); QTextStream(&command) << "getbandscope " << width();
-    connection.sendCommand(command);
+    //connection.sendCommand(command);
 }
 
 void Bandscope::bandscopeBuffer(char* header,char* buffer) {

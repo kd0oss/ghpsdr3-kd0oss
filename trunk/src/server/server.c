@@ -98,12 +98,14 @@ int main(int argc,char* argv[]) {
 
     process_args(argc,argv);
 
-    if(metis || hermes) {
+    if (metis || hermes)
+    {
         metis_discover(interface,metisip);
         sleep(1);
         // see if we have any Metis boards
         fprintf(stderr,"Found %d Metis/Hermes cards\n",metis_found());
-        if(metis_found()==0) {
+        if (metis_found()==0)
+        {
             exit(1);
         }
         ozy_set_buffers(2, hermes);
@@ -114,26 +116,28 @@ int main(int argc,char* argv[]) {
 
     create_listener_thread();
 
-    if(metis || hermes) {
+    if (metis || hermes)
         metis_start_receive_thread();
-    } else {
+    else
         create_ozy_thread();
-    }
 
-    while(1) {
+    while (1)
+    {
 	    char ch;
-	    while((ch = getc(stdin)) != EOF) 
+        while ((ch = getc(stdin)) != EOF)
 	      if (ch == 'q') break;
     }
-}
+} // end
 
-void process_args(int argc,char* argv[]) {
+
+void process_args(int argc,char* argv[])
+{
     int i;
 
-
-    while((i=getopt_long(argc,argv,short_options,long_options,&option_index))!=EOF) {
-
-        switch(i) {
+    while ((i=getopt_long(argc,argv,short_options,long_options,&option_index))!=EOF)
+    {
+        switch (i)
+        {
             case 0: // receivers
                 ozy_set_receivers(atoi(optarg));
                 break;
@@ -141,42 +145,69 @@ void process_args(int argc,char* argv[]) {
                 ozy_set_sample_rate(atoi(optarg));
                 break;
             case 2: // dither
-                if(strcmp(optarg,"off")==0) {
+                if (strcmp(optarg,"off")==0)
+                {
                     ozy_set_dither(0);
-                } else if(strcmp(optarg,"on")==0) {
-                    ozy_set_dither(1);
-                } else {
-                    fprintf(stderr,"invalid dither option\n");
                 }
+                else
+                    if (strcmp(optarg,"on")==0)
+                    {
+                        ozy_set_dither(1);
+                    }
+                    else
+                    {
+                        fprintf(stderr,"invalid dither option\n");
+                    }
                 break;
             case 3: // random
-                if(strcmp(optarg,"off")==0) {
+                if (strcmp(optarg,"off")==0)
+                {
                     ozy_set_random(0);
-                } else if(strcmp(optarg,"on")==0) {
-                    ozy_set_random(1);
-                } else {
-                    fprintf(stderr,"invalid random option\n");
                 }
+                else
+                    if (strcmp(optarg,"on")==0)
+                    {
+                        ozy_set_random(1);
+                    }
+                    else
+                    {
+                        fprintf(stderr,"invalid random option\n");
+                    }
                 break;
             case 4: // preamp
-                if(strcmp(optarg,"off")==0) {
+                if (strcmp(optarg,"off")==0)
+                {
                     ozy_set_preamp(0);
-                } else if(strcmp(optarg,"on")==0) {
-                    ozy_set_preamp(1);
-                } else {
-                    fprintf(stderr,"invalid preamp option\n");
                 }
+                else
+                    if (strcmp(optarg,"on")==0)
+                    {
+                        ozy_set_preamp(1);
+                    }
+                    else
+                    {
+                        fprintf(stderr,"invalid preamp option\n");
+                    }
                 break;
             case 5: // 10 MHz clock source
-                if(strcmp(optarg,"atlas")==0) {
+                if (strcmp(optarg,"atlas")==0)
+                {
                     ozy_set_10mhzsource(0);
-                } else if(strcmp(optarg,"penelope")==0) {
-                    ozy_set_10mhzsource(1);
-                } else if(strcmp(optarg,"mercury")==0) {
-                    ozy_set_10mhzsource(2);
-                } else {
-                    fprintf(stderr,"invalid 10 MHz clock option\n");
                 }
+                else
+                    if (strcmp(optarg,"penelope")==0)
+                    {
+                        ozy_set_10mhzsource(1);
+                    }
+                    else
+                        if (strcmp(optarg,"mercury")==0)
+                        {
+                            ozy_set_10mhzsource(2);
+                        }
+                        else
+                        {
+                            fprintf(stderr,"invalid 10 MHz clock option\n");
+                        }
                 break;
             case 6: // 122.88 MHz clock source
                 if(strcmp(optarg,"penelope")==0) {
@@ -233,7 +264,7 @@ void process_args(int argc,char* argv[]) {
 
             case 15: // metisip
                 metisip=optarg;
-fprintf(stderr,"metisip=%s\n",metisip);
+                fprintf(stderr,"metisip=%s\n",metisip);
                 break;
 
             case 16: // fpga image

@@ -138,7 +138,7 @@ HardwareRtlsdr :: HardwareRtlsdr (Connection *pC, QWidget *pW): DlgHardware (pC,
     // update the serial number in title bar
     QString command;
     command.clear(); QTextStream(&command) << "*getserial?";
-    pConn->sendCommand (command);
+//    pConn->sendCommand (command);
 
     // defaults
     attenuatorVal = -1;
@@ -152,7 +152,7 @@ void HardwareRtlsdr :: attClicked(int newVal)
    if (attenuatorVal != newVal) {
       QString command;
       command.clear(); QTextStream(&command) << "*setattenuator " << newVal;
-      pConn->sendCommand (command);
+ //     pConn->sendCommand (command);
       attenuatorVal = newVal;
    } 
 }

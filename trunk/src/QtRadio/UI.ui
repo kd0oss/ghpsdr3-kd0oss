@@ -633,10 +633,6 @@
     <addaction name="actionDither"/>
     <addaction name="actionRandom"/>
     <addaction name="separator"/>
-    <addaction name="actionPWS_Post_Filter"/>
-    <addaction name="actionPWS_Pre_Filter"/>
-    <addaction name="actionPWS_Semi_Raw"/>
-    <addaction name="actionPWS_Post_Det"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">

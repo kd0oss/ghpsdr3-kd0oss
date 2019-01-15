@@ -61,13 +61,43 @@
 #define READ_RTP_REPLY 5
 #define READ_ANSWER 6
 
+enum COMMAND_SET {
+    CSFIRST = 0,
+    QCOMMAND,
+    QDSPVERSION,
+    QLOFFSET,
+    QCOMMPROTOCOL1,
+    QSERVER,
+    QMASTER,
+    QINFO,
+    STARCOMMAND,
+    STARHARDWARE,
+    STARGETSERIAL,
+    SETFPS,
+    SETCLIENT,
+    SETFREQ,
+    SETMODE,
+    SETFILTER,
+    SETENCODING,
+    SETRXOUTGAIN,
+    SETSUBRXOUTGAIN,
+    STARTAUDIO,
+    SETPAN,
+    SETANFVALS,
+    SETNRVALS,
+    SETRXBPASSWIN,
+    SETTXBPASSWIN,
+    SETWINDOW,
+    GETSPECTRIM
+};
+
 class Connection : public QObject {
     Q_OBJECT
 public:
     Connection();
     virtual ~Connection();
     void connect(QString host,int receiver);
-    void sendCommand(QString command);
+    void sendCommand(QByteArray command, int size = 0);
     void sendAudio(int length,unsigned char* buffer);
     void freeBuffers(char* header,char* buffer);
     QSemaphore SemSpectrum;

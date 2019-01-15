@@ -134,13 +134,13 @@ void metis_discover(char* interface,char* metisip) {
     
     // send a broadcast to locate metis boards on the network
     discovery_socket=socket(PF_INET,SOCK_DGRAM,IPPROTO_UDP);
-    if(discovery_socket<0) {
+    if (discovery_socket<0) {
         perror("create socket failed for discovery_socket\n");
         exit(1);
     }
 
     // get my MAC address and IP address
-    if(get_addr(discovery_socket,interface)<0) {
+    if (get_addr(discovery_socket,interface)<0) {
         exit(1);
     }
 
@@ -158,7 +158,7 @@ void metis_discover(char* interface,char* metisip) {
 
     // start a receive thread to get discovery responses
     rc=pthread_create(&receive_thread_id,NULL,metis_receive_thread,NULL);
-    if(rc != 0) {
+    if (rc != 0) {
         fprintf(stderr,"pthread_create failed on metis_receive_thread: rc=%d\n", rc);
         exit(1);
     }
@@ -173,7 +173,7 @@ void metis_discover(char* interface,char* metisip) {
 
     // allow broadcast on the socket
     rc=setsockopt(discovery_socket, SOL_SOCKET, SO_BROADCAST, &on, sizeof(on));
-    if(rc != 0) {
+    if (rc != 0) {
         fprintf(stderr,"cannot set SO_BROADCAST: rc=%d\n", rc);
         exit(1);
     }
@@ -191,7 +191,7 @@ void metis_discover(char* interface,char* metisip) {
         buffer[i+3]=0x00;
     }
 
-    if(sendto(discovery_socket,buffer,63,0,(struct sockaddr*)&discovery_addr,discovery_length)<0) {
+    if (sendto(discovery_socket,buffer,63,0,(struct sockaddr*)&discovery_addr,discovery_length)<0) {
         perror("sendto socket failed for discovery_socket\n");
         exit(1);
     }
@@ -202,14 +202,14 @@ int metis_found() {
 }
 
 char* metis_ip_address(int entry) {
-    if(entry>=0 && entry<found) {
+    if (entry>=0 && entry<found) {
         return metis_cards[entry].ip_address;
     }
     return NULL;
 }
 
 char* metis_mac_address(int entry) {
-    if(entry>=0 && entry<found) {
+    if (entry>=0 && entry<found) {
         return metis_cards[entry].mac_address;
     }
     return NULL;
@@ -404,7 +404,7 @@ int metis_write(unsigned char ep,unsigned char* buffer,int length) {
     int i;
 
 //fprintf(stderr,"metis_write\n");
-    if(offset==8) {
+    if (offset==8) {
 
         send_sequence++;
         output_buffer[0]=0xEF;

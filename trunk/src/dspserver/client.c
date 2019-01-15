@@ -936,8 +936,7 @@ void thread_cleanup(void)
     for (i=0; i<CRYPTO_num_locks(); i++)
     {
         pthread_mutex_destroy(&(lock_cs[i]));
-        fprintf(stderr,"%8ld:%s\n",lock_count[i],
-                CRYPTO_get_lock_name(i));
+      //  fprintf(stderr,"%8ld:%s\n",lock_count[i], CRYPTO_get_lock_name(i));
     }
     OPENSSL_free(lock_cs);
     OPENSSL_free(lock_count);
@@ -1853,7 +1852,7 @@ void readcb(struct bufferevent *bev, void *ctx){
             sdr_log(SDR_LOG_INFO,"SetTXAMCarrierLevel: %s  txcfg: %d\n",message,txcfg);
             if ((ntok = tokenize_cmd(&saveptr, tokens, 3)) < 1)
                 goto badcommand;
-            pwr=atof(tokens[0]);
+            pwr=atof(tokens[0]) * 10.0f;
             if(txcfg == TXPASSWD){
                 if (ntok == 3) {
                     char *thisuser = tokens[1];

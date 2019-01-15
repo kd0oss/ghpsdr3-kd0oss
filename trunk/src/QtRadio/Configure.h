@@ -80,6 +80,9 @@ public:
 
     void setSampleRate(int samplerate);
     void setChannels(int channels);
+    int  getWindowType();
+    int  getRxFilterWindow();
+    int  getTxFilterWindow();
 
     bool getRTP();
     
@@ -205,8 +208,6 @@ public slots:
     void slotMicSampleRateChanged(int rate);
     void slotMicChannelsChanged(int channels);
     void slotMicOrderChanged(int selection);
-    void slotRxDCBlock(bool state);  //KD0OSS
-    void slotTxDCBlock(bool state);  //KD0OSS
     void slotWindowType(int type); //KD0OSS
 
     void slotUseRTP(bool state);
@@ -231,13 +232,6 @@ private slots:
     void on_pBtnAddHost_clicked();
     void on_pBtnRemHost_clicked();
     void on_encodingComboBox_currentIndexChanged(int index);
-    void on_RxIQcheckBox_toggled(bool checked);
-    void on_RxIQspinBox_valueChanged(int spinValue);
-    void onRxIQPhaseChanged(double arg1); //KD0OSS
-    void onRxIQGainChanged(double arg1); //KD0OSS
-    void onTxIQPhaseChanged(double arg1); //KD0OSS
-    void onTxIQGainChanged(double arg1); //KD0OSS
-    void onRxDCBlockGainChanged(int value); //KD0OSS
 /*    void onNbTransitionChanged(double); //KD0OSS
     void onNbLeadChanged(double); //KD0OSS
     void onNbLagChanged(double); //KD0OSS */

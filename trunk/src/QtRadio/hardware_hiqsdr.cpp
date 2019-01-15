@@ -123,7 +123,7 @@ HardwareHiqsdr :: HardwareHiqsdr (Connection *pC, QWidget *pW): DlgHardware (pC,
     // update the serial number in title bar
     QString command;
     command.clear(); QTextStream(&command) << "*getserial?";
-    pConn->sendCommand (command);
+ //   pConn->sendCommand (command);
 
     // defaults
     attenuatorVal = -1;
@@ -139,13 +139,13 @@ HardwareHiqsdr :: HardwareHiqsdr (Connection *pC, QWidget *pW): DlgHardware (pC,
     for (int n=0; n < 16; ++n) {
         QString command;
         command.clear(); QTextStream(&command) << "*getpreselector? " << n;
-        pConn->sendCommand (command);
+  //      pConn->sendCommand (command);
     }
     // update local preaplifier status querying the remote server
     {
         QString command;
         command.clear(); QTextStream(&command) << "*getpreampstatus?";
-        pConn->sendCommand (command);
+ //       pConn->sendCommand (command);
     }
 }
 
@@ -155,7 +155,7 @@ void HardwareHiqsdr :: attClicked(int newVal)
    if (attenuatorVal != newVal) {
       QString command;
       command.clear(); QTextStream(&command) << "*setattenuator " << newVal;
-      pConn->sendCommand (command);
+ //     pConn->sendCommand (command);
       attenuatorVal = newVal;
    } 
 }
@@ -166,7 +166,7 @@ void HardwareHiqsdr :: antClicked(int n)
    if (antennaVal != n) {
       QString command;
       command.clear(); QTextStream(&command) << "*selectantenna " << n;
-      pConn->sendCommand (command);
+ //     pConn->sendCommand (command);
       antennaVal = n;
    }
 }
@@ -177,7 +177,7 @@ void HardwareHiqsdr :: preselClicked(int n)
    if (preselVal != n) {
       QString command;
       command.clear(); QTextStream(&command) << "*selectpresel " << n;
-      pConn->sendCommand (command);
+  //    pConn->sendCommand (command);
       preselVal = n;
    }
 }
@@ -189,7 +189,7 @@ void HardwareHiqsdr :: preampChanged(int state)
    if (preampVal != state) {
       QString command;
       command.clear(); QTextStream(&command) << "*activatepreamp " << ((state==Qt::Checked) ? 1 : 0);
-      pConn->sendCommand (command);
+//      pConn->sendCommand (command);
       preampVal = state;
    }
 }

@@ -139,18 +139,7 @@ public slots:
 
     void actionMuteMainRx();
     void actionMuteSubRx();
-/*
-    void actionGain_10();
-    void actionGain_20();
-    void actionGain_30();
-    void actionGain_40();
-    void actionGain_50();
-    void actionGain_60();
-    void actionGain_70();
-    void actionGain_80();
-    void actionGain_90();
-    void actionGain_100();
-*/
+
     void actionSquelch();
     void actionSquelchReset();
     void squelchValueChanged(int);
@@ -211,10 +200,6 @@ public slots:
     void actionLong();
 
     void actionPreamp();
-    void actionPwsMode0(); //KD0OSS
-    void actionPwsMode1(); //KD0OSS
-    void actionPwsMode2(); //KD0OSS
-    void actionPwsMode3(); //KD0OSS
 
     void connected();
     void disconnected(QString message);
@@ -253,11 +238,6 @@ public slots:
 
     void hostChanged(QString host);
     void receiverChanged(int rx);
-    void rxDCBlockChanged(bool state); //KD0OSS
-    void txDCBlockChanged(bool state); //KD0OSS
-    void rxDCBlockGainChanged(int value); //KD0OSS
-    void setTxIQPhase(double value); //KD0OSS
-    void setTxIQGain(double value); //KD0OSS
 
     void agcSlopeChanged(int); //KD0OSS
     void agcMaxGainChanged(int); //KD0OSS
@@ -316,10 +296,6 @@ public slots:
     void setCanTX(bool tx);
     void setProtocol3(bool p);
     void closeServers ();
-    void RxIQcheckChanged(bool state);
-    void RxIQspinChanged(double num);
-    void setRxIQPhase(double value); //KD0OSS
-    void setRxIQGain(double value); //KD0OSS
     void cwPitchChanged(int cwPitch);
     void resetbandedges(double offset);
 

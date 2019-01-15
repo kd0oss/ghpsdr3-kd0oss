@@ -208,7 +208,7 @@ void EqualizerDialog::rxSliderChanged(void)
         line.sprintf("setrx3bdgreq %d %d %d %d", values[0], values[1], values[2], values[3]);
     }
     QTextStream(&command) << line;
-    connection->sendCommand(command);
+//    connection->sendCommand(command);
     qDebug()<<Q_FUNC_INFO<<":   The command sent is is "<< command;
 } // end rxSliderChanged
 
@@ -241,7 +241,7 @@ void EqualizerDialog::txSliderChanged(void)
         line.sprintf("settx3bdgreq %d %d %d %d", values[0], values[1], values[2], values[3]);
     }
     QTextStream(&command) << line;
-    connection->sendCommand(command);
+ //   connection->sendCommand(command);
     qDebug()<<Q_FUNC_INFO<<":   The command sent is is "<< command;
 } // end txSliderChanged
 

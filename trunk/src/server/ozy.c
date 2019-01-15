@@ -52,26 +52,26 @@
 #include "metis.h"
 #include "ozy.h"
 
-#define THREAD_STACK 32768
+#define THREAD_STACK              32768
 
-#define DEFAULT_OZY_BUFFERS 16
-#define OZY_BUFFER_SIZE 512
-#define OZY_HEADER_SIZE 8
+#define DEFAULT_OZY_BUFFERS       16
+#define OZY_BUFFER_SIZE           512
+#define OZY_HEADER_SIZE           8
 
 static int ozy_buffers=DEFAULT_OZY_BUFFERS;
 
-#define SYNC 0x7F
+#define SYNC                      0x7F
 
 // ozy command and control
-#define MOX_DISABLED    0x00
-#define MOX_ENABLED     0x01
+#define MOX_DISABLED              0x00
+#define MOX_ENABLED               0x01
 
-#define MIC_SOURCE_JANUS 0x00
-#define MIC_SOURCE_PENELOPE 0x80
-#define CONFIG_NONE     0x00
-#define CONFIG_PENELOPE 0x20
-#define CONFIG_MERCURY  0x40
-#define CONFIG_BOTH     0x60
+#define MIC_SOURCE_JANUS          0x00
+#define MIC_SOURCE_PENELOPE       0x80
+#define CONFIG_NONE               0x00
+#define CONFIG_PENELOPE           0x20
+#define CONFIG_MERCURY            0x40
+#define CONFIG_BOTH               0x60
 #define PENELOPE_122_88MHZ_SOURCE 0x00
 #define MERCURY_122_88MHZ_SOURCE  0x10
 #define ATLAS_10MHZ_SOURCE        0x00
@@ -306,33 +306,47 @@ void* playback_thread(void* arg);
 bool init_hpsdr();
 #endif
 
-void ozy_set_fpga_image(const char *s) {
+void ozy_set_fpga_image(const char *s)
+{
     strcpy (ozy_fpga, s);
 }
 
-void ozy_set_hex_image(const char *s) {
+
+void ozy_set_hex_image(const char *s)
+{
     strcpy (ozy_firmware, s);
 }
 
-void ozy_set_buffers(int buffers, int hermes) {
+
+void ozy_set_buffers(int buffers, int hermes)
+{
     ozy_buffers=buffers;
-    if (hermes) {
+    if (hermes)
+    {
        control_out = control_out_hermes;
        write_ozy_output_buffer = write_ozy_output_buffer_hermes;
-    } else {
+    }
+    else
+    {
         write_ozy_output_buffer = write_ozy_output_buffer_metis;
     }
 }
 
-void ozy_set_metis(int state) {
+
+void ozy_set_metis(int state)
+{
     metis=state;
 }
 
-void ozy_set_hermes(int state) {
+
+void ozy_set_hermes(int state)
+{
     hermes=state;
 }
 
-int create_ozy_thread() {
+
+int create_ozy_thread()
+{
     int rc;
 
 #ifndef __linux__
@@ -344,34 +358,42 @@ int create_ozy_thread() {
     //    receiver[i].frequency_changed=1;
     //}
 
-    if(!playback) {
+    if (!playback)
+    {
         ozy_init();
         ozy_prime();
     }
 
-    if(timing) {
+    if (timing)
+    {
         ftime(&rx_start_time);
         ftime(&tx_start_time);
     }
 
-    if(playback) {
+    if (playback)
+    {
         // create a thread to read/write to EP6/EP2
         rc=pthread_create(&playback_thread_id,NULL,playback_thread,NULL);
-        if(rc != 0) {
+        if (rc != 0)
+        {
             fprintf(stderr,"pthread_create failed on playback_thread: rc=%d\n", rc);
             exit(1);
         }
-    } else {
+    }
+    else
+    {
         // create a thread to read/write to EP6/EP2
         rc=pthread_create(&ep6_ep2_io_thread_id,NULL,ozy_ep6_ep2_io_thread,NULL);
-        if(rc != 0) {
+        if (rc != 0)
+        {
             fprintf(stderr,"pthread_create failed on ozy_ep6_io_thread: rc=%d\n", rc);
             exit(1);
         }
 
         // create a thread to read from EP4
         rc=pthread_create(&ep4_io_thread_id,NULL,ozy_ep4_io_thread,NULL);
-        if(rc != 0) {
+        if (rc != 0)
+        {
             fprintf(stderr,"pthread_create failed on ozy_ep4_io_thread: rc=%d\n", rc);
             exit(1);
         }
@@ -380,8 +402,11 @@ int create_ozy_thread() {
     return 0;
 }
 
-void ozy_set_record(char* f) {
-    if(playback||record) {
+
+void ozy_set_record(char* f)
+{
+    if (playback||record)
+    {
         fclose(recording);
     }
     strcpy(filename,f);
@@ -389,19 +414,25 @@ void ozy_set_record(char* f) {
     record=1;
     playback=0;
 
-fprintf(stderr,"recording\n");
+    fprintf(stderr,"recording\n");
 }
 
-void ozy_stop_record() {
-    if(record) {
+
+void ozy_stop_record()
+{
+    if (record)
+    {
         fclose(recording);
     }
     record=0;
-fprintf(stderr,"stopped recording\n");
+    fprintf(stderr,"stopped recording\n");
 }
 
-void ozy_set_playback(char* f) {
-    if(playback||record) {
+
+void ozy_set_playback(char* f)
+{
+    if (playback||record)
+    {
         fclose(recording);
     }
     strcpy(filename,f);
@@ -409,11 +440,14 @@ void ozy_set_playback(char* f) {
     playback=1;
     record=0;
 
-fprintf(stderr,"starting playback: %s\n",filename);
+    fprintf(stderr,"starting playback: %s\n",filename);
 }
 
-void ozy_set_receivers(int r) {
-    if(r>MAX_RECEIVERS) {
+
+void ozy_set_receivers(int r)
+{
+    if (r>MAX_RECEIVERS)
+    {
         fprintf(stderr,"MAX Receivers is 8!\n");
         exit(1);
     }
@@ -424,12 +458,17 @@ void ozy_set_receivers(int r) {
     control_out_hermes[4] |= (r-1)<<3;
 }
 
-int ozy_get_receivers() {
+
+int ozy_get_receivers()
+{
     return receivers;
 }
 
-void ozy_set_sample_rate(int r) {
-    switch(r) {
+
+void ozy_set_sample_rate(int r)
+{
+    switch (r)
+    {
         case 48000:
             sample_rate=r;
             speed=0;
@@ -463,15 +502,18 @@ void ozy_set_sample_rate(int r) {
     //playback_sleep=(int)((1000000.0/380.0));
     playback_sleep=3090;
     fprintf(stderr,"************** receivers=%d sample_rate=%d playback_sleep=%d\n",receivers,sample_rate,playback_sleep);
-
 }
 
-int ozy_set_playback_sleep(int sleep) {
+
+int ozy_set_playback_sleep(int sleep)
+{
     playback_sleep=sleep;
     return 0;
 }
 
-int ozy_get_sample_rate() {
+
+int ozy_get_sample_rate()
+{
     return sample_rate;
 }
 
@@ -483,14 +525,19 @@ static int file_exists (const char * fileName)
    return ( i == 0 ) ? 1 : 0 ;
 }
 
+
 #ifdef __linux__
-int filePath (char *sOut, const char *sIn) {
+int filePath (char *sOut, const char *sIn)
+{
     int rc = 0;
 
-    if ((rc = file_exists (sIn))) {
+    if ((rc = file_exists (sIn)))
+    {
        strcpy (sOut, sIn); 
        rc = 1;
-    } else {
+    }
+    else
+    {
       char cwd[PATH_MAX];
       char s[PATH_MAX];
       char xPath [PATH_MAX] = {0};
@@ -499,49 +546,61 @@ int filePath (char *sOut, const char *sIn) {
       int  rc = readlink ("/proc/self/exe", xPath, sizeof(xPath));
 
       // try to detect the directory from which the executable has been loaded
-      if (rc >= 0) {
-
-          if ( (p = strrchr (xPath, '/')) ) *(p+1) = '\0';
+      if (rc >= 0)
+      {
+          if ((p = strrchr (xPath, '/'))) *(p+1) = '\0';
           fprintf (stderr, "%d, Path of executable: [%s]\n", rc, xPath);
 
-          strcpy (s, xPath); strcat (s, sIn);
+          strcpy(s, xPath);
+          strcat (s, sIn);
 
-          if ((rc = file_exists (s))) {
+          if ((rc = file_exists (s)))
+          {
              // found in the same dir of executable
              fprintf (stderr, "File: [%s]\n", s);
              strcpy(sOut, s);
-          } else { 
-            if (getcwd(cwd, sizeof(cwd)) != NULL) {
-                fprintf(stdout, "Current working dir: %s\n", cwd);
-
-                strcpy (s, cwd); strcat (s, "/"); strcat (s, sIn);
-                if ((rc = file_exists (s))) {
-                   fprintf (stderr, "File: [%s]\n", s);
-                   strcpy(sOut, s);
-                }
-            }
           }
-       } else {
-          fprintf (stderr, "%d: %s\n", errno, strerror(errno));
+          else
+          {
+              if (getcwd(cwd, sizeof(cwd)) != NULL)
+              {
+                  fprintf(stdout, "Current working dir: %s\n", cwd);
+
+                  strcpy (s, cwd); strcat (s, "/"); strcat (s, sIn);
+                  if ((rc = file_exists (s)))
+                  {
+                      fprintf (stderr, "File: [%s]\n", s);
+                      strcpy(sOut, s);
+                  }
+              }
+          }
        }
+      else
+      {
+          fprintf (stderr, "%d: %s\n", errno, strerror(errno));
+      }
     }
     return rc;
 }
 #endif
 
 
-int ozy_init(void) {
+int ozy_init(void)
+{
     int rc;
 
     // On Windows, the following is replaced by init_hpsdr() in OzyInit.c
 #ifdef __linux__
 
-    if (strlen(ozy_firmware) == 0) filePath (ozy_firmware,"ozyfw-sdr1k.hex");
-    if (strlen(ozy_fpga) == 0)     filePath (ozy_fpga,"Ozy_Janus.rbf");
+    if (strlen(ozy_firmware) == 0)
+        filePath (ozy_firmware,"ozyfw-sdr1k.hex");
+    if (strlen(ozy_fpga) == 0)
+        filePath (ozy_fpga,"Ozy_Janus.rbf");
 
     // open ozy
     rc = ozy_open();
-    if (rc != 0) {
+    if (rc != 0)
+    {
         fprintf(stderr,"Cannot locate Ozy\n");
         exit(1);
     }
@@ -550,9 +609,9 @@ int ozy_init(void) {
     ozy_reset_cpu(1);
     ozy_load_firmware(ozy_firmware);
     ozy_reset_cpu(0);
-ozy_close();
+    ozy_close();
     sleep(5);
-ozy_open();
+    ozy_open();
     ozy_set_led(1,1);
     ozy_load_fpga(ozy_fpga);
     ozy_set_led(1,0);
@@ -569,57 +628,73 @@ ozy_open();
     return rc;
 }
 
-void ozy_prime() {
+
+void ozy_prime()
+{
     int i;
 
-    for(i=0;i<receivers;i++) {
+    for (i=0;i<receivers;i++)
+    {
         receiver[i].frequency=7056000L;
         receiver[i].frequency_changed=1;
     }
 
     memset((char *)&ozy_output_buffer,0,OZY_BUFFER_SIZE);
-    while(configure>0) {
-fprintf(stderr,"ozy_prime: configure=%d\n",configure);
+    while (configure>0)
+    {
+        fprintf(stderr,"ozy_prime: configure=%d\n",configure);
         write_ozy_output_buffer();
     }
 
-
-    for(i=0;i<receivers;i++) {
+    for (i=0;i<receivers;i++)
+    {
         current_receiver=i;
-fprintf(stderr,"ozy_prime: current_receiver=%d\n",current_receiver);
+        fprintf(stderr,"ozy_prime: current_receiver=%d\n",current_receiver);
         write_ozy_output_buffer();
     }
 
-    if((receivers%2)==1) {
+    if ((receivers%2)==1)
+    {
         write_ozy_output_buffer();
     }
 
     current_receiver=0;
 
-fprintf(stderr,"server configured for %d receivers at %d\n",receivers,sample_rate);
+    fprintf(stderr,"server configured for %d receivers at %d\n",receivers,sample_rate);
 }
 
-void* ozy_ep6_ep2_io_thread(void* arg) {
+
+void* ozy_ep6_ep2_io_thread(void* arg)
+{
     unsigned char input_buffer[OZY_BUFFER_SIZE*ozy_buffers];
     int bytes;
     int i;
 
-    while(1) {
+    while (1)
+    {
         // read an input buffer (blocks until all bytes read)
         bytes=ozy_read(0x86,input_buffer,OZY_BUFFER_SIZE*ozy_buffers);
-        if (bytes < 0) {
+        if (bytes < 0)
+        {
             fprintf(stderr,"ozy_ep6_ep2_io_thread: OzyBulkRead read failed %d\n",bytes);
-        } else if (bytes != OZY_BUFFER_SIZE*ozy_buffers) {
-            fprintf(stderr,"ozy_ep6_ep2_io_thread: OzyBulkRead only read %d bytes\n",bytes);
-        } else {
-            // process input buffers
-            for(i=0;i<ozy_buffers;i++) {
-                process_ozy_input_buffer(&input_buffer[i*OZY_BUFFER_SIZE]);
-            }
-            if(record) {
-                bytes=fwrite(input_buffer,sizeof(char),OZY_BUFFER_SIZE*ozy_buffers,recording);
-            }
         }
+        else
+            if (bytes != OZY_BUFFER_SIZE*ozy_buffers)
+            {
+                fprintf(stderr,"ozy_ep6_ep2_io_thread: OzyBulkRead only read %d bytes\n",bytes);
+            }
+            else
+            {
+                // process input buffers
+                for (i=0;i<ozy_buffers;i++)
+                {
+                    process_ozy_input_buffer(&input_buffer[i*OZY_BUFFER_SIZE]);
+                }
+                if (record)
+                {
+                    bytes=fwrite(input_buffer,sizeof(char),OZY_BUFFER_SIZE*ozy_buffers,recording);
+                }
+            }
 
         //current_receiver++;
         //
@@ -629,98 +704,123 @@ void* ozy_ep6_ep2_io_thread(void* arg) {
     }
 }
 
-void* playback_thread(void* arg) {
+
+void* playback_thread(void* arg)
+{
     unsigned char input_buffer[OZY_BUFFER_SIZE*ozy_buffers];
     int bytes;
     int i;
 
-    while(1) {
+    while (1)
+    {
         // read an input buffer (blocks until all bytes read)
         bytes=fread(input_buffer,sizeof(char), OZY_BUFFER_SIZE*ozy_buffers,recording);
-        if (bytes <= 0) {
+        if (bytes <= 0)
+        {
             fclose(recording);
-fprintf(stderr,"restarting playback: %s\n",filename);
+            fprintf(stderr,"restarting playback: %s\n",filename);
             recording=fopen(filename,"r");
             bytes=fread(input_buffer,sizeof(char), OZY_BUFFER_SIZE*ozy_buffers,recording);
         }
         // process input buffers
-        for(i=0;i<ozy_buffers;i++) {
+        for (i=0;i<ozy_buffers;i++)
+        {
             process_ozy_input_buffer(&input_buffer[i*OZY_BUFFER_SIZE]);
         }
 
         current_receiver++;
 
-        if(current_receiver==receivers) {
+        if (current_receiver==receivers)
+        {
             current_receiver=0;
         }
         usleep(playback_sleep);
     }
 }
 
-void write_ozy_output_buffer_metis() {
+
+void write_ozy_output_buffer_metis()
+{
     int bytes;
 
     ozy_output_buffer[0]=SYNC;
     ozy_output_buffer[1]=SYNC;
     ozy_output_buffer[2]=SYNC;
 
-    if(configure>0) {
+    if (configure > 0)
+    {
         configure--;
         ozy_output_buffer[3]=control_out[0];
         ozy_output_buffer[4]=control_out[1];
         ozy_output_buffer[5]=control_out[2];
         ozy_output_buffer[6]=control_out[3];
         ozy_output_buffer[7]=control_out[4];
-    } else if(receiver[current_receiver].frequency_changed) {
-        //if(receivers==1) {
-        //    ozy_output_buffer[3]=control_out[0]|0x02;
-        //} else {
-        ozy_output_buffer[3]=control_out[0]|((current_receiver+2)<<1);
-        //}
-        ozy_output_buffer[4]=receiver[current_receiver].frequency>>24;
-        ozy_output_buffer[5]=receiver[current_receiver].frequency>>16;
-        ozy_output_buffer[6]=receiver[current_receiver].frequency>>8;
-        ozy_output_buffer[7]=receiver[current_receiver].frequency;
-        receiver[current_receiver].frequency_changed=0;
-    } else {
-        ozy_output_buffer[3]=control_out[0];
-        ozy_output_buffer[4]=control_out[1];
-        ozy_output_buffer[5]=control_out[2];
-        ozy_output_buffer[6]=control_out[3];
-        ozy_output_buffer[7]=control_out[4];
     }
-
-    if(metis || hermes) {
-        bytes=metis_write(0x02,ozy_output_buffer,OZY_BUFFER_SIZE);
-        if(bytes!=OZY_BUFFER_SIZE) {
-            perror("OzyBulkWrite failed");
+    else
+    {
+        if (receiver[current_receiver].frequency_changed)
+        {
+            //if(receivers==1) {
+            //    ozy_output_buffer[3]=control_out[0]|0x02;
+            //} else {
+            ozy_output_buffer[3]=control_out[0]|((current_receiver+2)<<1);
+            //}
+            ozy_output_buffer[4]=receiver[current_receiver].frequency>>24;
+            ozy_output_buffer[5]=receiver[current_receiver].frequency>>16;
+            ozy_output_buffer[6]=receiver[current_receiver].frequency>>8;
+            ozy_output_buffer[7]=receiver[current_receiver].frequency;
+            receiver[current_receiver].frequency_changed=0;
         }
-    } else {
-        bytes=ozy_write(0x02,ozy_output_buffer,OZY_BUFFER_SIZE);
-        if(bytes!=OZY_BUFFER_SIZE) {
-            perror("OzyBulkWrite failed");
+        else
+        {
+            ozy_output_buffer[3]=control_out[0];
+            ozy_output_buffer[4]=control_out[1];
+            ozy_output_buffer[5]=control_out[2];
+            ozy_output_buffer[6]=control_out[3];
+            ozy_output_buffer[7]=control_out[4];
+        }
+
+        if (metis || hermes)
+        {
+            bytes=metis_write(0x02,ozy_output_buffer,OZY_BUFFER_SIZE);
+            if (bytes!=OZY_BUFFER_SIZE)
+            {
+                perror("OzyBulkWrite failed");
+            }
+        }
+        else
+        {
+            bytes=ozy_write(0x02,ozy_output_buffer, OZY_BUFFER_SIZE);
+            if (bytes != OZY_BUFFER_SIZE)
+            {
+                perror("OzyBulkWrite failed");
+            }
+        }
+
+        if (tx_frame < 10)
+        {
+            if (metis || hermes)
+            {
+                dump_ozy_buffer("sent to Metis:", tx_frame, ozy_output_buffer);
+            }
+            else
+            {
+                dump_ozy_buffer("sent to Ozy:", tx_frame, ozy_output_buffer);
+            }
+        }
+        tx_frame++;
+        current_receiver++;
+
+        if (current_receiver == receivers)
+        {
+            current_receiver = 0;
         }
     }
-
-    if(tx_frame<10) {
-        if(metis || hermes) {
-            dump_ozy_buffer("sent to Metis:",tx_frame,ozy_output_buffer);
-        } else {
-            dump_ozy_buffer("sent to Ozy:",tx_frame,ozy_output_buffer);
-        }
-    }
-    tx_frame++;
-    current_receiver++;
-
-    if(current_receiver==receivers) {
-        current_receiver=0;
-    }
-
 }
 
 
-void write_ozy_output_buffer_hermes () {
-
+void write_ozy_output_buffer_hermes ()
+{
     static int hermes_send_status = 0;
 
     int bytes;
@@ -729,38 +829,42 @@ void write_ozy_output_buffer_hermes () {
     ozy_output_buffer[1]=SYNC;
     ozy_output_buffer[2]=SYNC;
 
-    if(configure>0) {
+    if (configure>0)
+    {
         configure--;
         ozy_output_buffer[3]=control_out[0];
         ozy_output_buffer[4]=control_out[1];
         ozy_output_buffer[5]=control_out[2];
         ozy_output_buffer[6]=control_out[3];
         ozy_output_buffer[7]=control_out[4];
-    } else {
-
-        switch (hermes_send_status) {
+    }
+    else
+    {
+        switch (hermes_send_status)
+        {
         case 0:
-            if(receiver[current_receiver].frequency_changed) {
+            if(receiver[current_receiver].frequency_changed)
+            {
                 // C0
                 // 0 0 0 0 0 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver_1
                 //
                 // C0
-                // 0 0 0 0 0 1 1 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _2 
+                // 0 0 0 0 0 1 1 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _2
                 //
                 // C0
-                // 0 0 0 0 1 0 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _3 
+                // 0 0 0 0 1 0 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _3
                 //
                 // C0
-                // 0 0 0 0 1 0 1 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _4 
+                // 0 0 0 0 1 0 1 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _4
                 //
                 // C0
-                // 0 0 0 0 1 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _5 
+                // 0 0 0 0 1 1 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _5
                 //
                 // C0
-                // 0 0 0 0 1 1 1 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _6 
+                // 0 0 0 0 1 1 1 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _6
                 //
                 // C0
-                // 0 0 0 1 0 0 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _7 
+                // 0 0 0 1 0 0 0 x     C1, C2, C3, C4   NCO Frequency in Hz for Receiver _7
                 ozy_output_buffer[3]=control_out[0]|((current_receiver+2)<<1);
                 ozy_output_buffer[4]=receiver[current_receiver].frequency>>24;
                 ozy_output_buffer[5]=receiver[current_receiver].frequency>>16;
@@ -768,23 +872,27 @@ void write_ozy_output_buffer_hermes () {
                 ozy_output_buffer[7]=receiver[current_receiver].frequency;
                 receiver[current_receiver].frequency_changed=0;
 
-            } else if (mox) {
-                //  C0
-                //  0 0 0 0 0 0 1 x     C1, C2, C3, C4 NCO Frequency in Hz for Transmitter, Apollo ATU
-                //                                     (32 bit binary representation - MSB in C1) 
-                ozy_output_buffer[3]=control_out[0]|((1)<<1);
-                ozy_output_buffer[4]=receiver[current_receiver].frequency>>24;
-                ozy_output_buffer[5]=receiver[current_receiver].frequency>>16;
-                ozy_output_buffer[6]=receiver[current_receiver].frequency>>8;
-                ozy_output_buffer[7]=receiver[current_receiver].frequency;
-
-            } else {
-                ozy_output_buffer[3]=control_out[0];
-                ozy_output_buffer[4]=control_out[1];
-                ozy_output_buffer[5]=control_out[2];
-                ozy_output_buffer[6]=control_out[3];
-                ozy_output_buffer[7]=control_out[4];
             }
+            else
+                if (mox)
+                {
+                    //  C0
+                    //  0 0 0 0 0 0 1 x     C1, C2, C3, C4 NCO Frequency in Hz for Transmitter, Apollo ATU
+                    //                                     (32 bit binary representation - MSB in C1)
+                    ozy_output_buffer[3]=control_out[0]|((1)<<1);
+                    ozy_output_buffer[4]=receiver[current_receiver].frequency>>24;
+                    ozy_output_buffer[5]=receiver[current_receiver].frequency>>16;
+                    ozy_output_buffer[6]=receiver[current_receiver].frequency>>8;
+                    ozy_output_buffer[7]=receiver[current_receiver].frequency;
+                }
+                else
+                {
+                    ozy_output_buffer[3]=control_out[0];
+                    ozy_output_buffer[4]=control_out[1];
+                    ozy_output_buffer[5]=control_out[2];
+                    ozy_output_buffer[6]=control_out[3];
+                    ozy_output_buffer[7]=control_out[4];
+                }
             hermes_send_status = 1;
             break;
 
@@ -813,64 +921,84 @@ void write_ozy_output_buffer_hermes () {
 
     {
         static int rr = 0;
-        if (rr & 0x400) {
+        if (rr & 0x400)
+        {
             dump_ozy_header("HERMES  ", ozy_output_buffer[0], ozy_output_buffer);
             rr = 0;
         }
-        rr++ ;
+        rr++;
     }
 
-    if (mox) {
+    if (mox)
+    {
         ozy_output_buffer[3] |= 0x01;
-    } else {
+    }
+    else
+    {
         ozy_output_buffer[3] &= 0xFE;
     }
 
-    if(metis || hermes) {
+    if (metis || hermes)
+    {
         bytes=metis_write(0x02,ozy_output_buffer,OZY_BUFFER_SIZE);
-        if(bytes!=OZY_BUFFER_SIZE) {
+        if (bytes!=OZY_BUFFER_SIZE)
+        {
             perror("OzyBulkWrite failed");
         }
-    } else {
+    }
+    else
+    {
         bytes=ozy_write(0x02,ozy_output_buffer,OZY_BUFFER_SIZE);
-        if(bytes!=OZY_BUFFER_SIZE) {
+        if (bytes!=OZY_BUFFER_SIZE)
+        {
             perror("OzyBulkWrite failed");
         }
     }
 
-if(tx_frame<10) {
-    if(metis || hermes) {
-        dump_ozy_buffer("sent to Metis:",tx_frame,ozy_output_buffer);
-    } else {
-        dump_ozy_buffer("sent to Ozy:",tx_frame,ozy_output_buffer);
+    if (tx_frame<10)
+    {
+        if (metis || hermes)
+        {
+            dump_ozy_buffer("sent to Metis:",tx_frame,ozy_output_buffer);
+        }
+        else
+        {
+            dump_ozy_buffer("sent to Ozy:",tx_frame,ozy_output_buffer);
+        }
     }
-}
     tx_frame++;
     current_receiver++;
 
-    if(current_receiver==receivers) {
+    if (current_receiver==receivers)
+    {
         current_receiver=0;
     }
 
 }
 
-void process_ozy_input_buffer(unsigned char* buffer) {
+
+void process_ozy_input_buffer(unsigned char* buffer)
+{
     int b=0;
     int b_max;
     int r;
     int left_sample,right_sample,mic_sample;
     float left_sample_float,right_sample_float,mic_sample_float;
 
-if(rx_frame<10) {
-    if(metis || hermes) {
-        dump_ozy_buffer("received from Metis:",rx_frame,buffer);
-    } else {
-        dump_ozy_buffer("received from Ozy:",rx_frame,buffer);
+    if (rx_frame<10)
+    {
+        if (metis || hermes)
+        {
+            dump_ozy_buffer("received from Metis:",rx_frame,buffer);
+        }
+        else
+        {
+            dump_ozy_buffer("received from Ozy:",rx_frame,buffer);
+        }
     }
-}
 
-    if(buffer[b++]==SYNC && buffer[b++]==SYNC && buffer[b++]==SYNC) {
-
+    if (buffer[b++]==SYNC && buffer[b++]==SYNC && buffer[b++]==SYNC)
+    {
         // extract control bytes
         control_in[0]=buffer[b++];
         control_in[1]=buffer[b++];
@@ -883,8 +1011,9 @@ if(rx_frame<10) {
         dash=(control_in[0]&0x02)==0x02;
         dot=(control_in[0]&0x04)==0x04;
 
-        switch((control_in[0]>>3)&0x1F) {
-        // C1 
+        switch ((control_in[0]>>3)&0x1F)
+        {
+        // C1
         // 0 0 0 0 0 0 0 0
         //   | | | | | | |
         //   | | | | | | +---------- LT2208 Overflow (1 = active, 0 = inactive)
@@ -893,37 +1022,44 @@ if(rx_frame<10) {
         //   | | | +---------------- Hermes I03 (0 = active, 1 = inactive)
         //   | | +------------------ Hermes I04 (0 = active, 1 = inactive)
         //   | +-------------------- Cyclops PLL locked (0 = unlocked, 1 = locked)
-        //   +---------------------- Cyclops - Mercury frequency changed, bit toggles   
-        //                  
+        //   +---------------------- Cyclops - Mercury frequency changed, bit toggles
+        //
         case 0:
             lt2208ADCOverflow=control_in[1]&0x01;
             IO1=(control_in[1]&0x02)?0:1;
             IO2=(control_in[1]&0x04)?0:1;
             IO3=(control_in[1]&0x08)?0:1;
             IO4=(control_in[1]&0x10)?0:1;
-            if(mercury_software_version!=control_in[2]) {
+            if (mercury_software_version!=control_in[2])
+            {
                 mercury_software_version=control_in[2];
                 fprintf(stderr,"  Mercury Software version: %d (0x%0X)\n",mercury_software_version,mercury_software_version);
             }
-            if(penelope_software_version!=control_in[3]) {
+            if (penelope_software_version!=control_in[3])
+            {
                 penelope_software_version=control_in[3];
                 fprintf(stderr,"  Penelope Software version: %d (0x%0X)\n",penelope_software_version,penelope_software_version);
             }
-            if (hermes) {
-                if(hermes_software_version!=control_in[4]) {
+            if (hermes)
+            {
+                if (hermes_software_version!=control_in[4])
+                {
                     hermes_software_version=control_in[4];
                     fprintf(stderr,"  Hermes Software version: %d (0x%0X)\n",hermes_software_version,hermes_software_version);
                 }
-            } else {
-                if(ozy_software_version!=control_in[4]) {
+            }
+            else
+            {
+                if (ozy_software_version!=control_in[4])
+                {
                     ozy_software_version=control_in[4];
                     fprintf(stderr,"  Ozy Software version: %d (0x%0X)\n",ozy_software_version,ozy_software_version);
                 }
             }
             break;
-/*
+            /*
  *          C0
- *          0 0 0 0 1 x x x    
+ *          0 0 0 0 1 x x x
  *
  *          C1 - Bits 15-8 of Forward Power from Penelope or Hermes* (AIN5)
  *          C2 - Bits 7-0  of Forward Power from Penelope or Hermes* (AIN5)
@@ -936,9 +1072,9 @@ if(rx_frame<10) {
             forwardPower=(control_in[1]<<8)+control_in[2]; // from Penelope or Hermes
             alexForwardPower=(control_in[3]<<8)+control_in[4]; // from Alex or Apollo
             break;
-/*
+            /*
  *          C0
- *          0 0 0 1 0 x x x    
+ *          0 0 0 1 0 x x x
  *
  *          C1 - Bits 15-8 of Reverse Power from Alex or Apollo*(AIN2)
  *          C2 - Bits 7-0  of Reverse Power from Alex or Apollo*(AIN2)
@@ -951,9 +1087,9 @@ if(rx_frame<10) {
             alexReversePower=(control_in[1]<<8)+control_in[2]; // from Alex or Apollo
             AIN3=(control_in[3]<<8)+control_in[4]; // from Penelope or Hermes
             break;
-/*
+            /*
  *          C0
- *          0 0 0 1 1 x x x    
+ *          0 0 0 1 1 x x x
  *
  *          C1 - Bits 15-8 of AIN4 from Penny or Hermes*
  *          C2 - Bits 7-0  of AIN4 from Penny or Hermes*
@@ -968,22 +1104,25 @@ if(rx_frame<10) {
             break;
         }
 
-        switch(receivers) {
-            case 1: b_max=512-0; break;
-            case 2: b_max=512-0; break;
-            case 3: b_max=512-4; break;
-            case 4: b_max=512-10; break;
-            case 5: b_max=512-24; break;
-            case 6: b_max=512-10; break;
-            case 7: b_max=512-20; break;
-            case 8: b_max=512-4; break;
-            default: assert(0); break;
+        switch (receivers)
+        {
+        case 1: b_max=512-0; break;
+        case 2: b_max=512-0; break;
+        case 3: b_max=512-4; break;
+        case 4: b_max=512-10; break;
+        case 5: b_max=512-24; break;
+        case 6: b_max=512-10; break;
+        case 7: b_max=512-20; break;
+        case 8: b_max=512-4; break;
+        default: assert(0); break;
         }
 
         // extract the samples
-        while(b<b_max) {
+        while (b<b_max)
+        {
             // extract each of the receivers
-            for(r=0;r<receivers;r++) {
+            for (r=0;r<receivers;r++)
+            {
                 left_sample   = (int)((signed char)buffer[b++]) << 16;
                 left_sample  += (int)((unsigned char)buffer[b++]) << 8;
                 left_sample  += (int)((unsigned char)buffer[b++]);
@@ -995,16 +1134,18 @@ if(rx_frame<10) {
                 receiver[r].input_buffer[samples]=left_sample_float;
                 receiver[r].input_buffer[samples+BUFFER_SIZE]=right_sample_float;
             }
-                // send to dspserver
-                mic_sample    = (int)((signed char) buffer[b++]) << 8;
-                mic_sample   += (int)((unsigned char)buffer[b++]);
-                if (hermes) {
-                    mic_sample_float=(float)mic_sample/32767.0 ;           // 16 bit sample
-                } else 
-                    mic_sample_float=(float)mic_sample/32767.0 * mic_gain; // 16 bit sample
-                receiver[r].input_buffer[samples+BUFFER_SIZE+BUFFER_SIZE]=mic_sample_float;
+            // send to dspserver
+            mic_sample    = (int)((signed char) buffer[b++]) << 8;
+            mic_sample   += (int)((unsigned char)buffer[b++]);
+            if (hermes)
+            {
+                mic_sample_float=(float)mic_sample/32767.0 ;           // 16 bit sample
+            }
+            else
+                mic_sample_float=(float)mic_sample/32767.0 * mic_gain; // 16 bit sample
+            receiver[r].input_buffer[samples+BUFFER_SIZE+BUFFER_SIZE]=mic_sample_float;
 
-/*
+            /*
             mic_sample    = (int)((signed char) buffer[b++]) << 8;
             mic_sample   += (int)((unsigned char)buffer[b++]);
             mic_sample_float=(float)mic_sample/32767.0*mic_gain; // 16 bit sample
@@ -1015,9 +1156,11 @@ if(rx_frame<10) {
 */
             samples++;
 
-            if(timing) {
+            if (timing)
+            {
                 rx_sample_count++;
-                if(rx_sample_count==sample_rate) {
+                if (rx_sample_count==sample_rate)
+                {
                     ftime(&rx_end_time);
                     fprintf(stderr,"%d rx samples in %ld ms\n",rx_sample_count,((rx_end_time.time*1000)+rx_end_time.millitm)-((rx_start_time.time*1000)+rx_start_time.millitm));
                     rx_sample_count=0;
@@ -1027,68 +1170,84 @@ if(rx_frame<10) {
 
 
             // when we have enough samples send them to the clients
-            if(samples==BUFFER_SIZE) {
+            if (samples==BUFFER_SIZE)
+            {
                 //if(ptt||mox) {
                 //    process_microphone_samples(mic_left_buffer);
                 //}
                 // send I/Q data to clients
-                for(r=0;r<receivers;r++) {
+                for (r=0;r<receivers;r++)
+                {
                     send_IQ_buffer(r);
                 }
                 samples=0;
             }
         }
 
-    } else {
+    }
+    else
+    {
         fprintf(stderr,"SYNC error\n");
         dump_ozy_buffer("SYNC ERROR",rx_frame,buffer);
         exit(1);
     }
 
-
     rx_frame++;
 }
 
-void* ozy_ep4_io_thread(void* arg) {
+
+void* ozy_ep4_io_thread(void* arg)
+{
     unsigned char buffer[BANDSCOPE_BUFFER_SIZE*2];
     int bytes;
-//    int i;
+    //    int i;
 
-    while(1) {
+    while (1)
+    {
         bytes=ozy_read(0x84,(void*)(bandscope.buffer),sizeof(buffer));
-        if (bytes < 0) {
+        if (bytes < 0)
+        {
             fprintf(stderr,"ozy_ep4_io_thread: OzyBulkRead failed %d bytes\n",bytes);
             exit(1);
-        } else if (bytes != BANDSCOPE_BUFFER_SIZE*2) {
-            fprintf(stderr,"ozy_ep4_io_thread: OzyBulkRead only read %d bytes\n",bytes);
-            exit(1);
-        } else {
-            // process the buffer
-            process_bandscope_buffer(buffer);
         }
+        else
+            if (bytes != BANDSCOPE_BUFFER_SIZE*2)
+            {
+                fprintf(stderr,"ozy_ep4_io_thread: OzyBulkRead only read %d bytes\n",bytes);
+                exit(1);
+            }
+            else
+            {
+                // process the buffer
+                process_bandscope_buffer(buffer);
+            }
     }
 }
 
 
-void process_bandscope_buffer(unsigned char* buffer) {
+void process_bandscope_buffer(unsigned char* buffer)
+{
     int b=0;
     int sample;
     float sample_float;
     int i;
 
-    for(i=0;i<BANDSCOPE_BUFFER_SIZE;i++) {
+    for (i=0;i<BANDSCOPE_BUFFER_SIZE;i++)
+    {
         sample    = (int)((signed char) buffer[b++]) << 8;
         sample   += (int)((unsigned char)buffer[b++]);
         sample_float=(float)sample/32767.0; // 16 bit sample
         bandscope.buffer[i]=sample_float;
-//fprintf(stderr,"%d: %d %f\n",i,sample,sample_float);
+        //fprintf(stderr,"%d: %d %f\n",i,sample,sample_float);
     }
 
     send_bandscope_buffer();
 }
 
+
 void process_ozy_output_buffer(float *left_output_buffer,float *right_output_buffer,
-                               float *left_tx_buffer,float *right_tx_buffer,int mox_state) {
+                               float *left_tx_buffer,float *right_tx_buffer,int mox_state)
+{
     //unsigned char ozy_samples[1024*8];
     int j,c;
     short left_rx_sample;
@@ -1097,32 +1256,39 @@ void process_ozy_output_buffer(float *left_output_buffer,float *right_output_buf
     short right_tx_sample;
 
     mox=mox_state;
-    if(mox) {
+    if (mox)
+    {
         control_out[0]|=0x01;
-    } else {
+    }
+    else
+    {
         control_out[0]&=0xFE;
     }
 
-    if(!playback) {
+    if (!playback)
+    {
         //
-        // process the output 
+        // process the output
         // skipping all the samples more that 48 kS/s
-        // 
-        for(j=0,c=0;j<BUFFER_SIZE;j+=output_sample_increment) {
-
-            if(mox) {
+        //
+        for (j=0,c=0;j<BUFFER_SIZE;j+=output_sample_increment)
+        {
+            if (mox)
+            {
                 left_rx_sample=0.0;
                 right_rx_sample=0.0;
                 left_tx_sample=(short)(left_tx_buffer[j]*32767.0);
                 right_tx_sample=(short)(right_tx_buffer[j]*32767.0);
-            } else {
+            }
+            else
+            {
                 left_rx_sample=(short)(left_output_buffer[j]*32767.0);
                 right_rx_sample=(short)(right_output_buffer[j]*32767.0);
                 left_tx_sample=0.0;
                 right_tx_sample=0.0;
             }
 
-/*
+            /*
             if(mox) {
                 left_tx_sample=(short)(left_output_buffer[j]*32767.0);
                 right_tx_sample=(short)(right_output_buffer[j]*32767.0);
@@ -1147,9 +1313,11 @@ fprintf(stderr,"TX left=%8d right=%8d\r",left_tx_sample,right_tx_sample);
             ozy_output_buffer[ozy_output_buffer_index++]=right_tx_sample>>8;
             ozy_output_buffer[ozy_output_buffer_index++]=right_tx_sample;
 
-            if(timing) {
+            if (timing)
+            {
                 tx_sample_count++;
-                if(tx_sample_count==sample_rate/output_sample_increment) {
+                if (tx_sample_count==sample_rate/output_sample_increment)
+                {
                     ftime(&tx_end_time);
                     fprintf(stderr,"%d tx samples in %ld ms\n",tx_sample_count,((tx_end_time.time*1000)+tx_end_time.millitm)-((tx_start_time.time*1000)+tx_start_time.millitm));
                     tx_sample_count=0;
@@ -1157,63 +1325,84 @@ fprintf(stderr,"TX left=%8d right=%8d\r",left_tx_sample,right_tx_sample);
                 }
             }
 
-            if(ozy_output_buffer_index==OZY_BUFFER_SIZE) {
+            if (ozy_output_buffer_index==OZY_BUFFER_SIZE)
+            {
                 write_ozy_output_buffer();
                 ozy_output_buffer_index=OZY_HEADER_SIZE;
             }
         }
     }
-
 }
 
-void ozy_set_preamp(int p) {
+
+void ozy_set_preamp(int p)
+{
     control_out[3]=control_out[3]&0xFB;
     control_out[3]=control_out[3]|(p<<2);
     fprintf(stderr,"%s: %d 0x%02X\n", __FUNCTION__, p, control_out[3]);
 }
 
-void ozy_set_dither(int dither) {
+
+void ozy_set_dither(int dither)
+{
     control_out[3]=control_out[3]&0xF7;
     control_out[3]=control_out[3]|(dither<<3);
 }
 
-void ozy_set_random(int random) {
+
+void ozy_set_random(int random)
+{
     control_out[3]=control_out[3]&0xEF;
     control_out[3]=control_out[3]|(random<<4);
 }
 
-void ozy_set_10mhzsource(int source) {
+
+void ozy_set_10mhzsource(int source)
+{
     control_out[1]=control_out[1]&0xF3;
     control_out[1]=control_out[1]|(source<<2);
 }
 
-void ozy_set_122_88mhzsource(int source) {
+
+void ozy_set_122_88mhzsource(int source)
+{
     control_out[1]=control_out[1]&0xEF;
     control_out[1]=control_out[1]|(source<<4);
 }
 
-void ozy_set_micsource(int source) {
+
+void ozy_set_micsource(int source)
+{
     control_out[1]=control_out[1]&0x7F;
     control_out[1]=control_out[1]|(source<<7);
 }
 
-void ozy_set_class(int c) {
+
+void ozy_set_class(int c)
+{
     control_out[2]=control_out[2]&0xFE;
     control_out[2]=control_out[2]|c;
 }
 
-void ozy_set_timing(int t) {
+
+void ozy_set_timing(int t)
+{
     timing=t;
 }
 
-void ozy_set_open_collector_outputs(int oc) {
+
+void ozy_set_open_collector_outputs(int oc)
+{
     control_out[2]=control_out[2]&0x01;
     control_out[2]=control_out[2]|(oc<<1);
 }
 
-void ozy_set_hermes_power(unsigned char p) {
-    control_out_hermes_pow[1]=p;    
+
+void ozy_set_hermes_power(unsigned char p)
+{
+    control_out_hermes_pow[1]=p;
 }
+
 
 void ozy_set_hermes_mic_boost(int b)
 {
@@ -1222,12 +1411,14 @@ void ozy_set_hermes_mic_boost(int b)
     fprintf(stderr,"%s: %d: 0x%02X\n", __FUNCTION__, b, control_out_hermes_pow[2]);
 }
 
+
 void ozy_set_hermes_lineingain(unsigned char p)
 {
     control_out_hermes_att[2]=control_out_hermes_att[2]&0xE0;
     control_out_hermes_att[2]=control_out_hermes_att[2] | (p & 0x1F);
     fprintf(stderr,"%s: %d 0x%02X\n", __FUNCTION__, p, control_out_hermes_att[2]);
 }
+
 
 void ozy_set_hermes_linein(unsigned char p)
 {
@@ -1236,8 +1427,10 @@ void ozy_set_hermes_linein(unsigned char p)
     fprintf(stderr,"%s: %d: 0x%02X\n", __FUNCTION__, p, control_out_hermes_pow[2]);
 }
 
-void ozy_set_hermes_att(int av) {
-    control_out_hermes_att[4] = (av & 0x1f) | 0x20;    
+
+void ozy_set_hermes_att(int av)
+{
+    control_out_hermes_att[4] = (av & 0x1f) | 0x20;
     fprintf(stderr,"%s: 0x%02X\n", __FUNCTION__, control_out_hermes_att[4]);
 }
 
@@ -1247,12 +1440,14 @@ int ozy_get_hermes_sw_ver(void)
     return hermes_software_version;
 }
 
+
 void ozy_set_alex_rx_att (unsigned int a)
 {
     a = a & 0x03;
     control_out[3]=control_out[3]&0xFC;
     control_out[3]=control_out[3]|(a);
 }
+
 
 void ozy_set_alex_rx_antenna (unsigned int a)
 {

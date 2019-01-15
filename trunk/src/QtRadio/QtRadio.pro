@@ -46,7 +46,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 
-
+QMAKE_CXXFLAGS += -fopenmp
 
 SOURCES += main.cpp\
     USBFilters.cpp \
@@ -213,5 +213,5 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../usr/l
 #else:symbian: LIBS += -lcodec2 -lsamplerate
 #else:unix: LIBS += -lcodec2 -lsamplerate -lortp
 else:symbian: LIBS += -lsamplerate
-else:unix: LIBS += -lsamplerate -lortp
+else:unix: LIBS += -lsamplerate -lortp -lgomp
 

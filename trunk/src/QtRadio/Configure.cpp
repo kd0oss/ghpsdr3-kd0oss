@@ -90,8 +90,8 @@ Configure::Configure() {
     widget.anfDelaySpinBox->setValue(8);
     widget.anfGainSpinBox->setValue(32);
     widget.anfLeakSpinBox->setValue(1);
-    widget.nbThresholdSpinBox->setValue(20);
-    widget.sdromThresholdSpinBox->setValue(20);
+//    widget.nbThresholdSpinBox->setValue(20);
+//    widget.sdromThresholdSpinBox->setValue(20);
 
     widget.ifFrequencyLineEdit->setText("28000000");
     //set up userpass
@@ -103,9 +103,9 @@ Configure::Configure() {
     widget.userpass->setEditTriggers(QAbstractItemView::AllEditTriggers);
     //QTableWidgetItem *newitem = new QTableWidgetItem("Fill Item");
     //widget.userpass->setItem(0, 0, newitem);
-    widget.rxDCBlockCheckBox->setChecked(false);  //KD0OSS
-    widget.txDCBlockCheckBox->setChecked(false);  //KD0OSS
-    widget.windowComboBox->setCurrentIndex(11);  //KD0OSS
+ //   widget.rxDCBlockCheckBox->setChecked(false);  //KD0OSS
+ //   widget.txDCBlockCheckBox->setChecked(false);  //KD0OSS
+    widget.windowComboBox->setCurrentIndex(1);  //KD0OSS
     widget.pttKeyEdit->setText("None");  // KD0OSS
 
     connect(widget.spectrumHighSpinBox,SIGNAL(valueChanged(int)),this,SLOT(slotSpectrumHighChanged(int)));
@@ -129,13 +129,13 @@ Configure::Configure() {
 
     connect(widget.hostComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(slotHostChanged(int)));
     connect(widget.rxSpinBox,SIGNAL(valueChanged(int)),this,SLOT(slotReceiverChanged(int)));
-    connect(widget.rxDCBlockCheckBox, SIGNAL(clicked(bool)), this, SLOT(slotRxDCBlock(bool)));   //KD0OSS
-    connect(widget.rxDCBlkGainSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onRxDCBlockGainChanged(int)));  //KD0OSS
-    connect(widget.txDCBlockCheckBox, SIGNAL(clicked(bool)), this, SLOT(slotTxDCBlock(bool)));   //KD0OSS
-    connect(widget.rxIQPhaseSpinBox,SIGNAL(valueChanged(double)),this,SLOT(onRxIQPhaseChanged(double)));   //KD0OSS
-    connect(widget.rxIQGainSpinBox,SIGNAL(valueChanged(double)),this,SLOT(onRxIQGainChanged(double)));   //KD0OSS
-    connect(widget.txIQPhaseSpinBox,SIGNAL(valueChanged(double)),this,SLOT(onTxIQPhaseChanged(double)));   //KD0OSS
-    connect(widget.txIQGainSpinBox,SIGNAL(valueChanged(double)),this,SLOT(onTxIQGainChanged(double)));   //KD0OSS
+//    connect(widget.rxDCBlockCheckBox, SIGNAL(clicked(bool)), this, SLOT(slotRxDCBlock(bool)));   //KD0OSS
+//    connect(widget.rxDCBlkGainSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onRxDCBlockGainChanged(int)));  //KD0OSS
+//    connect(widget.txDCBlockCheckBox, SIGNAL(clicked(bool)), this, SLOT(slotTxDCBlock(bool)));   //KD0OSS
+//    connect(widget.rxIQPhaseSpinBox,SIGNAL(valueChanged(double)),this,SLOT(onRxIQPhaseChanged(double)));   //KD0OSS
+//    connect(widget.rxIQGainSpinBox,SIGNAL(valueChanged(double)),this,SLOT(onRxIQGainChanged(double)));   //KD0OSS
+//    connect(widget.txIQPhaseSpinBox,SIGNAL(valueChanged(double)),this,SLOT(onTxIQPhaseChanged(double)));   //KD0OSS
+//    connect(widget.txIQGainSpinBox,SIGNAL(valueChanged(double)),this,SLOT(onTxIQGainChanged(double)));   //KD0OSS
 
     connect(widget.rxAgcSlopeSpinBox,SIGNAL(valueChanged(int)),this,SLOT(onRxAgcSlopeChanged(int))); //KD0OSS
     connect(widget.rxAgcMaxGainSpinBox,SIGNAL(valueChanged(int)),this,SLOT(onRxAgcMaxGainChanged(int))); //KD0OSS
@@ -151,7 +151,7 @@ Configure::Configure() {
     connect(widget.levelerDecaySpinBox,SIGNAL(valueChanged(int)),this,SLOT(onLevelerDecayChanged(int))); //KD0OSS
     connect(widget.levelerHangSpinBox,SIGNAL(valueChanged(int)),this,SLOT(onLevelerHangChanged(int))); //KD0OSS
 
-    connect(widget.alcEnabledCheckBox,SIGNAL(stateChanged(int)),this,SLOT(onAlcStateChanged(int))); //KD0OSS
+//    connect(widget.alcEnabledCheckBox,SIGNAL(stateChanged(int)),this,SLOT(onAlcStateChanged(int))); //KD0OSS
     connect(widget.alcAttackSpinBox,SIGNAL(valueChanged(int)),this,SLOT(onAlcAttackChanged(int))); //KD0OSS
     connect(widget.alcDecaySpinBox,SIGNAL(valueChanged(int)),this,SLOT(onAlcDecayChanged(int))); //KD0OSS
     connect(widget.alcHangSpinBox,SIGNAL(valueChanged(int)),this,SLOT(onAlcHangChanged(int))); //KD0OSS
@@ -174,8 +174,8 @@ Configure::Configure() {
 
     connect(widget.windowComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(slotWindowType(int)));
 
-    connect(widget.nbThresholdSpinBox,SIGNAL(valueChanged(int)),this,SLOT(slotNbThresholdChanged(int)));
-    connect(widget.sdromThresholdSpinBox,SIGNAL(valueChanged(int)),this,SLOT(slotSdromThresholdChanged(int)));
+//    connect(widget.nbThresholdSpinBox,SIGNAL(valueChanged(int)),this,SLOT(slotNbThresholdChanged(int)));
+//    connect(widget.sdromThresholdSpinBox,SIGNAL(valueChanged(int)),this,SLOT(slotSdromThresholdChanged(int)));
 
     connect(widget.addPushButton,SIGNAL(clicked()),this,SLOT(slotXVTRAdd()));
     connect(widget.deletePushButton,SIGNAL(clicked()),this,SLOT(slotXVTRDelete()));
@@ -331,43 +331,43 @@ void Configure::loadSettings(QSettings* settings) {
     settings->endGroup();
 
     settings->beginGroup("ALC"); // KD0OSS
-    if (settings->contains("enabled")) widget.alcEnabledCheckBox->setChecked(settings->value("enabled",FALSE).toBool());
+//    if (settings->contains("enabled")) widget.alcEnabledCheckBox->setChecked(settings->value("enabled",FALSE).toBool());
     if (settings->contains("attack")) widget.alcAttackSpinBox->setValue(settings->value("attack").toInt());
     if (settings->contains("decay")) widget.alcDecaySpinBox->setValue(settings->value("decay").toInt());
     if (settings->contains("hang")) widget.alcHangSpinBox->setValue(settings->value("hang").toInt());
     settings->endGroup();
 
     settings->beginGroup("NB");
-    if(settings->contains("threshold")) widget.nbThresholdSpinBox->setValue(settings->value("threshold").toInt());
+ //   if(settings->contains("threshold")) widget.nbThresholdSpinBox->setValue(settings->value("threshold").toInt());
     settings->endGroup();
 
     settings->beginGroup("SDROM");
-    if(settings->contains("threshold")) widget.nbThresholdSpinBox->setValue(settings->value("threshold").toInt());
+ //   if(settings->contains("threshold")) widget.nbThresholdSpinBox->setValue(settings->value("threshold").toInt());
     settings->endGroup();
 
     settings->beginGroup("RXDCBlock"); // KD0OSS
-    if (settings->contains("rxDCBlock")) widget.rxDCBlockCheckBox->setChecked(settings->value("rxDCBlock",FALSE).toBool());
-    if (settings->contains("rxDCBlockGain")) widget.rxDCBlkGainSpinBox->setValue(settings->value("rxDCBlockGain",0).toInt());
+//    if (settings->contains("rxDCBlock")) widget.rxDCBlockCheckBox->setChecked(settings->value("rxDCBlock",FALSE).toBool());
+//    if (settings->contains("rxDCBlockGain")) widget.rxDCBlkGainSpinBox->setValue(settings->value("rxDCBlockGain",0).toInt());
     settings->endGroup();
 
     settings->beginGroup("TxSettings");
     widget.allowTx->setChecked(settings->value("allowTx",FALSE).toBool());
-    widget.txDCBlockCheckBox->setChecked(settings->value("txDCBlock",FALSE).toBool());  //KD0OSS
+//    widget.txDCBlockCheckBox->setChecked(settings->value("txDCBlock",FALSE).toBool());  //KD0OSS
     widget.pttKeyEdit->setText(settings->value("pttKeyText", "None").toString());
     pttKeyId = settings->value("pttKeyId", 0).toUInt();
     settings->endGroup();
 
-    settings->beginGroup("TxIQimage");  //KD0OSS
-    if (settings->contains("TxIQPhaseCorrect")) widget.txIQPhaseSpinBox->setValue(settings->value("TxIQPhaseCorrect",0).toInt());  //KD0OSS
-    if (settings->contains("TxIQGainCorrect")) widget.txIQGainSpinBox->setValue(settings->value("TxIQGainCorrect",0).toInt());  //KD0OSS
-    settings->endGroup();
+//    settings->beginGroup("TxIQimage");  //KD0OSS
+//    if (settings->contains("TxIQPhaseCorrect")) widget.txIQPhaseSpinBox->setValue(settings->value("TxIQPhaseCorrect",0).toInt());  //KD0OSS
+//    if (settings->contains("TxIQGainCorrect")) widget.txIQGainSpinBox->setValue(settings->value("TxIQGainCorrect",0).toInt());  //KD0OSS
+//    settings->endGroup();
 
-    settings->beginGroup("RxIQimage");
-    widget.RxIQcheckBox->setChecked(settings->value("RxIQon/off",TRUE).toBool());
-    widget.RxIQspinBox->setValue(settings->value("RxIQmu",25).toInt());
-    widget.rxIQPhaseSpinBox->setValue(settings->value("RxIQPhaseCorrect",0).toInt());  //KD0OSS
-    widget.rxIQGainSpinBox->setValue(settings->value("RxIQGainCorrect",0).toInt());  //KD0OSS
-    settings->endGroup();
+//    settings->beginGroup("RxIQimage");
+//    widget.RxIQcheckBox->setChecked(settings->value("RxIQon/off",TRUE).toBool());
+//    widget.RxIQspinBox->setValue(settings->value("RxIQmu",25).toInt());
+//    widget.rxIQPhaseSpinBox->setValue(settings->value("RxIQPhaseCorrect",0).toInt());  //KD0OSS
+//    widget.rxIQGainSpinBox->setValue(settings->value("RxIQGainCorrect",0).toInt());  //KD0OSS
+//    settings->endGroup();
 
     settings->beginGroup("UserPass");
     //QTableWidgetItem *server, *user, *pass;
@@ -455,37 +455,37 @@ void Configure::saveSettings(QSettings* settings) {
     settings->setValue("hang",widget.levelerHangSpinBox->value());
     settings->endGroup();
     settings->beginGroup("ALC");  // KD0OSS
-    settings->setValue("enabled",widget.alcEnabledCheckBox->checkState());
+//    settings->setValue("enabled",widget.alcEnabledCheckBox->checkState());
     settings->setValue("attack",widget.alcAttackSpinBox->value());
     settings->setValue("decay",widget.alcDecaySpinBox->value());
     settings->setValue("hang",widget.alcHangSpinBox->value());
     settings->endGroup();
     settings->beginGroup("NB");
-    settings->setValue("threshold",widget.nbThresholdSpinBox->value());
+//    settings->setValue("threshold",widget.nbThresholdSpinBox->value());
     settings->endGroup();
     settings->beginGroup("SDROM");
-    settings->setValue("threshold",widget.nbThresholdSpinBox->value());
+//    settings->setValue("threshold",widget.nbThresholdSpinBox->value());
     settings->endGroup();
     settings->beginGroup("RXDCBlock");  // KD0OSS
-    settings->setValue("rxDCBlock",widget.rxDCBlockCheckBox->checkState());
-    settings->setValue("rxDCBlockGain",widget.rxDCBlkGainSpinBox->value());
+//    settings->setValue("rxDCBlock",widget.rxDCBlockCheckBox->checkState());
+//    settings->setValue("rxDCBlockGain",widget.rxDCBlkGainSpinBox->value());
     settings->endGroup();
     settings->beginGroup("TxSettings");
     settings->setValue("allowTx",widget.allowTx->checkState());
-    settings->setValue("txDCBlock",widget.txDCBlockCheckBox->checkState());  //KD0OSS
+//    settings->setValue("txDCBlock",widget.txDCBlockCheckBox->checkState());  //KD0OSS
     settings->setValue("pttKeyId", pttKeyId); //KD0OSS
     settings->setValue("pttKeyText", widget.pttKeyEdit->text());
     settings->endGroup();
-    settings->beginGroup("TxIQimage"); // KD0OSS
-    settings->setValue("TxIQPhaseCorrect",widget.txIQPhaseSpinBox->value());
-    settings->setValue("TxIQGainCorrect",widget.txIQGainSpinBox->value());
-    settings->endGroup();
-    settings->beginGroup("RxIQimage");
-    settings->setValue("RxIQon/off",widget.RxIQcheckBox->checkState());
-    settings->setValue("RxIQmu",widget.RxIQspinBox->value());
-    settings->setValue("RxIQPhaseCorrect",widget.rxIQPhaseSpinBox->value());  //KD0OSS
-    settings->setValue("RxIQGainCorrect",widget.rxIQGainSpinBox->value());  //KD0OSS
-    settings->endGroup();
+//    settings->beginGroup("TxIQimage"); // KD0OSS
+//    settings->setValue("TxIQPhaseCorrect",widget.txIQPhaseSpinBox->value());
+//    settings->setValue("TxIQGainCorrect",widget.txIQGainSpinBox->value());
+//    settings->endGroup();
+//    settings->beginGroup("RxIQimage");
+//    settings->setValue("RxIQon/off",widget.RxIQcheckBox->checkState());
+ //   settings->setValue("RxIQmu",widget.RxIQspinBox->value());
+//    settings->setValue("RxIQPhaseCorrect",widget.rxIQPhaseSpinBox->value());  //KD0OSS
+//    settings->setValue("RxIQGainCorrect",widget.rxIQGainSpinBox->value());  //KD0OSS
+//    settings->endGroup();
     settings->beginGroup("UserPass");
     QTableWidgetItem *server, *user, *pass;
     for (int i=0;i<widget.userpass->rowCount();i++){
@@ -645,11 +645,11 @@ void Configure::slotAnfLeakChanged(int leak) {
 }
 
 void Configure::slotNbThresholdChanged(int threshold) {
-    emit nbThresholdChanged((double)widget.nbThresholdSpinBox->value()*0.165);
+//    emit nbThresholdChanged((double)widget.nbThresholdSpinBox->value()*0.165);
 }
 
 void Configure::slotSdromThresholdChanged(int threshold) {
-    emit sdromThresholdChanged((double)widget.sdromThresholdSpinBox->value()*0.165);
+ //   emit sdromThresholdChanged((double)widget.sdromThresholdSpinBox->value()*0.165);
 }
 
 void Configure::slotWindowType(int type) {
@@ -660,25 +660,6 @@ QString Configure::getHost() {
     return widget.hostComboBox->currentText();
 }
 
-void Configure::onRxDCBlockGainChanged(int value){ //KD0OSS
-    emit rxDCBlockGainChanged(value);
-}
-
-void Configure::slotRxDCBlock(bool state) {   //KD0OSS
-    emit rxDCBlockChanged(state);
-}
-
-void Configure::slotTxDCBlock(bool state) {   //KD0OSS
-    emit txDCBlockChanged(state);
-}
-
-bool Configure::getRxDCBlockValue() {  //KD0OSS
-    return widget.rxDCBlockCheckBox->isChecked();
-}
-
-bool Configure::getTxDCBlockValue() {  //KD0OSS
-    return widget.txDCBlockCheckBox->isChecked();
-}
 
 int Configure::getRxAGCSlopeValue() {  //KD0OSS
     return widget.rxAgcSlopeSpinBox->value();
@@ -729,7 +710,7 @@ int Configure::getLevelerHangValue() {  //KD0OSS
 }
 
 bool Configure::getALCEnabledValue() {  //KD0OSS
-    return widget.alcEnabledCheckBox->isChecked();
+ //   return widget.alcEnabledCheckBox->isChecked();
 }
 
 int Configure::getALCAttackValue() {  //KD0OSS
@@ -865,7 +846,7 @@ double Configure::getAnfLeak() {
 }
 
 double Configure::getNbThreshold() {
-    return (double)widget.nbThresholdSpinBox->value()*0.165;
+ //   return (double)widget.nbThresholdSpinBox->value()*0.165;
 }
 
 void Configure::slotXVTRAdd() {
@@ -984,14 +965,19 @@ void Configure::setTxAllowed(bool newstate)
     widget.allowTx->setChecked(newstate);
 }
 
-void Configure::on_RxIQcheckBox_toggled(bool checked)
+int Configure::getWindowType()
 {
-    emit RxIQcheckChanged(checked);
+    widget.windowComboBox->currentIndex();
 }
 
-void Configure::on_RxIQspinBox_valueChanged(int spinValue)
+int Configure::getRxFilterWindow()
 {
-    emit RxIQspinChanged((double)spinValue);
+    widget.rxFilterWindowCombo->currentIndex();
+}
+
+int Configure::getTxFilterWindow()
+{
+    widget.txFilterWindowCombo->currentIndex();
 }
 
 void Configure::on_userpasssave_clicked()
@@ -1018,25 +1004,11 @@ bool  Configure::setPasswd(QString ServerName){
     return false;
 }
 
-bool Configure::getRxIQcheckboxState()
-{
-    return widget.RxIQcheckBox->isChecked();
-}
-
-double Configure::getRxIQspinBoxValue()
-{
-    return widget.RxIQspinBox->value();
-}
-
 int Configure::getCwPitch()
 {
     return widget.spinBox_cwPitch->value();
 }
 
-bool Configure::getRxIQdivCheckBoxState()
-{
-    return widget.RxIQdivCheckBox->isChecked();
-}
 
 void Configure::on_spinBox_cwPitch_valueChanged(int arg1)
 {
@@ -1054,25 +1026,6 @@ void Configure::on_avgSpinBox_valueChanged(int arg1)
     emit avgSpinChanged(arg1);
 }
 
-void Configure::onRxIQPhaseChanged(double arg1)   //KD0OSS
-{
-    emit rxIQPhaseChanged(arg1);
-}
-
-void Configure::onRxIQGainChanged(double arg1)   //KD0OSS
-{
-    emit rxIQGainChanged(arg1);
-}
-
-void Configure::onTxIQPhaseChanged(double arg1)   //KD0OSS
-{
-    emit txIQPhaseChanged(arg1);
-}
-
-void Configure::onTxIQGainChanged(double arg1)   //KD0OSS
-{
-    emit txIQGainChanged(arg1);
-}
 /*
 void Configure::onNbTransitionChanged(double arg1) // KD0OSS
 {

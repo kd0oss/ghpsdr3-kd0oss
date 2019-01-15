@@ -11,7 +11,7 @@
 
 HardwareHermes :: HardwareHermes (Connection *pC, QWidget *pW): DlgHardware (pC, pW)
 {    
-    settings = new QSettings("G0ORX", "QtRadio");
+    settings = new QSettings("FreeSDR", "QtRadio");
 
     // tab Widwged
     QTabWidget *pTw = new QTabWidget(this);
@@ -213,9 +213,12 @@ HardwareHermes :: HardwareHermes (Connection *pC, QWidget *pW): DlgHardware (pC,
     connect(micBoost, SIGNAL(stateChanged(int)), this, SLOT(micBoostClicked(int)));
 
     // update the serial number in title bar
-    QString command;
-    command.clear(); QTextStream(&command) << "*getserial?";
-    pConn->sendCommand (command);
+    QByteArray command;
+    command.clear();
+  //  QTextStream(&command) << "*getserial?";
+    command.append((char)STARCOMMAND);
+    command.append((char)STARGETSERIAL);
+    pConn->sendCommand(command);
 
     // defaults
 //    ditherCB->setCheckState(Qt::Checked);  // dither ON
@@ -270,7 +273,7 @@ void HardwareHermes :: attClicked(int state)
    qDebug() << "Attenuator: " << state << "dB";
    QString command;
    command.clear(); QTextStream(&command) << "*setattenuator " << state;
-   pConn->sendCommand (command);
+//   pConn->sendCommand (command);
 
    if (pAttSlider->value() != state) {
        pAttSlider->setValue(state);
@@ -284,7 +287,7 @@ void HardwareHermes :: atxrClicked(int state)
    qDebug() << "Alex Tx antenna: " << state ;
    QString command;
    command.clear(); QTextStream(&command) << "*alextxrelay " << state;
-   pConn->sendCommand (command);
+//   pConn->sendCommand (command);
    settings->setValue("alextx", state);
 }
 
@@ -293,7 +296,7 @@ void HardwareHermes :: micBoostClicked(int state)
    qDebug() << "Hermes Mic boost: " << state ;
    QString command;
    command.clear(); QTextStream(&command) << "*hermesmicboost " << state;
-   pConn->sendCommand (command);
+//   pConn->sendCommand (command);
    settings->setValue("micboost", state);
 }
 
@@ -303,7 +306,7 @@ void HardwareHermes :: attSlid(int state)
    qDebug() << "Attenuator: " << state << "dB";
    QString command;
    command.clear(); QTextStream(&command) << "*setattenuator " << state;
-   pConn->sendCommand (command);
+//   pConn->sendCommand (command);
    settings->setValue("attslider", state);
 }
 
@@ -313,7 +316,7 @@ void HardwareHermes :: txDriveSlid(int state)
    qDebug() << "Tx Drive Level: " << state << "dB";
    QString command;
    command.clear(); QTextStream(&command) << "*settxdrive " << state;
-   pConn->sendCommand (command);
+ //  pConn->sendCommand (command);
    settings->setValue("txslider", state);
 }
 
@@ -323,10 +326,9 @@ void HardwareHermes :: txLineInGainSlid(int state)
    qDebug() << "Tx Line In Gain:: " << state << "dB";
    QString command;
    command.clear(); QTextStream(&command) << "*settxlineingain " << state;
-   pConn->sendCommand (command);
+//   pConn->sendCommand (command);
    settings->setValue("txlinegainslider", state);
 }
-
 
 
 void HardwareHermes :: ditherChanged(int state)
@@ -334,7 +336,7 @@ void HardwareHermes :: ditherChanged(int state)
    qDebug() << "Dither: " << state;
    QString command;
    command.clear(); QTextStream(&command) << "*dither " << ((state==Qt::Checked) ? "on" : "off") ;
-   pConn->sendCommand (command);
+//   pConn->sendCommand (command);
    settings->setValue("dither", state);
 }
 
@@ -343,7 +345,7 @@ void HardwareHermes :: preampChanged(int state)
    qDebug() << "Preamp: " << state;
    QString command;
    command.clear(); QTextStream(&command) << "*preamp " << ((state==Qt::Checked) ? "on" : "off") ;
-   pConn->sendCommand (command);
+//   pConn->sendCommand (command);
    settings->setValue("preamp", state);
 }
 
@@ -352,7 +354,7 @@ void HardwareHermes :: randomChanged(int state)
    qDebug() << "Random: " << state;
    QString command;
    command.clear(); QTextStream(&command) << "*random " << ((state==Qt::Checked) ? "on" : "off") ;
-   pConn->sendCommand (command);
+ //  pConn->sendCommand (command);
    settings->setValue("random", state);
 }
 
