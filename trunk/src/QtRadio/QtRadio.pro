@@ -49,26 +49,14 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 QMAKE_CXXFLAGS += -fopenmp
 
 SOURCES += main.cpp\
-    USBFilters.cpp \
     UI.cpp \
-    SAMFilters.cpp \
     Mode.cpp \
-    LSBFilters.cpp \
-    FMNFilters.cpp \
-    FiltersBase.cpp \
     Filters.cpp \
-    Filter.cpp \
-    DSBFilters.cpp \
-    DIGUFilters.cpp \
-    DIGLFilters.cpp \
-    CWUFilters.cpp \
-    CWLFilters.cpp \
     Connection.cpp \
     Configure.cpp \
     BandStackEntry.cpp \
     Band.cpp \
     Audio.cpp \
-    AMFilters.cpp \
     BandLimit.cpp \
     FrequencyInfo.cpp \
     Frequency.cpp \
@@ -91,41 +79,22 @@ SOURCES += main.cpp\
     Audioinput.cpp\
     servers.cpp \
     G711A.cpp \
-    RTP.cpp \
-    hardware.cpp\
     powermate.cpp \
-    hardware_sdr1000.cpp \
     calc.cpp \
     EqualizerDialog.cpp \
-    hardware_sdriq.cpp \
-    hardware_rtlsdr.cpp \
-    hardware_perseus.cpp \
-    hardware_hiqsdr.cpp \
-    hardware_hermes.cpp \
-    Panadapter.cpp
+    Panadapter.cpp \
+    hermesframe.cpp
 
 
 HEADERS  += \ 
-    USBFilters.h \
     UI.h \
-    SAMFilters.h \
     Mode.h \
-    LSBFilters.h \
-    FMNFilters.h \
-    FiltersBase.h \
     Filters.h \
-    Filter.h \
-    DSBFilters.h \
-    DIGUFilters.h \
-    DIGLFilters.h \
-    CWUFilters.h \
-    CWLFilters.h \
     Connection.h \
     Configure.h \
     BandStackEntry.h \
     Band.h \
     Audio.h \
-    AMFilters.h \
     BandLimit.h \
     FrequencyInfo.h \
     Frequency.h \
@@ -141,7 +110,6 @@ HEADERS  += \
     XvtrEntry.h \
     Bookmarks.h \
     KeypadDialog.h \
- #   codec2.h \
     smeter.h \
     rigctl.h \
     vfo.h \
@@ -149,20 +117,12 @@ HEADERS  += \
     Audioinput.h \
     servers.h \
     G711A.h \
-    RTP.h \
     cusdr_queue.h \
-    hardware.h\
     powermate.h \
-    hardware_sdr1000.h \
-    hardware_sdr1000.h \
     calc.h \
     EqualizerDialog.h \
-    hardware_sdriq.h \
-    hardware_perseus.h \
-    hardware_hiqsdr.h \
-    hardware_hermes.h \
-    hardware_rtlsdr.h \
-    Panadapter.h
+    Panadapter.h \
+    hermesframe.h
 
 FORMS    += \   
     UI.ui \
@@ -176,7 +136,8 @@ FORMS    += \
     vfo.ui \
     ctl.ui \
     servers.ui \
-    EqualizerDialog.ui
+    EqualizerDialog.ui \
+    hermesframe.ui
 
 OTHER_FILES += \
     android/AndroidManifest.xml \
@@ -213,5 +174,5 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../../../usr/l
 #else:symbian: LIBS += -lcodec2 -lsamplerate
 #else:unix: LIBS += -lcodec2 -lsamplerate -lortp
 else:symbian: LIBS += -lsamplerate
-else:unix: LIBS += -lsamplerate -lortp -lgomp
+else:unix: LIBS += -lsamplerate -lgomp
 

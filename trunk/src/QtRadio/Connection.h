@@ -23,6 +23,10 @@
 *
 */
 
+/* Copyright (C) Rick Schnicker, KD0OSS
+ * Rewrite for QtRadioII
+ */
+
 #ifndef CONNECTION_H
 #define	CONNECTION_H
 
@@ -36,43 +40,45 @@
 
 #include "Buffer.h"
 
-#define SPECTRUM_BUFFER     0
-#define AUDIO_BUFFER        1
-#define BANDSCOPE_BUFFER    2
-#define RTP_REPLY_BUFFER    3
-#define ANSWER_BUFFER       4
+#define SPECTRUM_BUFFER       0
+#define AUDIO_BUFFER          1
+#define BANDSCOPE_BUFFER      2
+#define RTP_REPLY_BUFFER      3
+#define ANSWER_BUFFER         4
 
 // minimum supported header version
-#define HEADER_VERSION 2
-#define HEADER_SUBVERSION 0
+#define HEADER_VERSION        2
+#define HEADER_SUBVERSION     0
 
 // g0orx binary header
-#define HEADER_SIZE_2_0 13
-#define HEADER_SIZE_2_1 15
-#define AUDIO_HEADER_SIZE 5
+#define HEADER_SIZE_2_0       13
+#define HEADER_SIZE_2_1       15
+#define AUDIO_HEADER_SIZE     5
 #define AUDIO_LENGTH_POSITION 1
 
-#define SEND_BUFFER_SIZE 64
+#define SEND_BUFFER_SIZE      64
 
-#define READ_HEADER 0
-#define READ_BUFFER 1
-#define READ_HEADER_TYPE 3
-#define READ_AUDIO_HEADER 4
-#define READ_RTP_REPLY 5
-#define READ_ANSWER 6
+#define READ_HEADER           0
+#define READ_BUFFER           1
+#define READ_HEADER_TYPE      3
+#define READ_AUDIO_HEADER     4
+#define READ_RTP_REPLY        5
+#define READ_ANSWER           6
 
 enum COMMAND_SET {
     CSFIRST = 0,
-    QCOMMAND,
+    QUESTION,
     QDSPVERSION,
     QLOFFSET,
     QCOMMPROTOCOL1,
     QSERVER,
     QMASTER,
     QINFO,
+    QCANTX,
     STARCOMMAND,
     STARHARDWARE,
     STARGETSERIAL,
+    ISMIC,
     SETFPS,
     SETCLIENT,
     SETFREQ,
@@ -96,14 +102,15 @@ class Connection : public QObject {
 public:
     Connection();
     virtual ~Connection();
-    void connect(QString host,int receiver);
-    void sendCommand(QByteArray command, int size = 0);
-    void sendAudio(int length,unsigned char* buffer);
-    void freeBuffers(char* header,char* buffer);
-    QSemaphore SemSpectrum;
-    void setMuted(bool);
+    void    connect(QString host, int receiver);
+    void    sendCommand(QByteArray command, int size = 0);
+    void    sendAudio(int length, unsigned char* buffer);
+    void    freeBuffers(char* header, char* buffer);
+    void    setMuted(bool);
+    bool    getSlave();
     QString getHost();
-    bool getSlave();
+
+    QSemaphore SemSpectrum;
 
 public slots:
     void connected();
@@ -120,7 +127,6 @@ signals:
     void audioBuffer(char* header,char* buffer);
     void spectrumBuffer(char* header,char* buffer);
     void bandscopeBuffer(char* header,char* buffer);
-    void remoteRTP(char* host,int port);
     void printStatusBar(QString message);
     void slaveSetFreq(long long f);
     void slaveSetMode(int m);
@@ -128,37 +134,33 @@ signals:
     void slaveSetZoom(int z);
     void setdspversion(long, QString);
     void setservername( QString);
-    void setRemoteRTPPort(QString,int);
     void setCanTX(bool);
     void setChkTX(bool);  // password style server
     void resetbandedges(double loffset);
     void setFPS();
-    void setProtocol3(bool);
-    void hardware (QString);
+    void hardware(QString);
 
 private:
     // really not used (and not even implemented)
     // defined as private in order to prevent unduly usage 
     Connection(const Connection& orig);
 
-    QString host;
-    int port;
-    QTcpSocket* tcpSocket;
-    QMutex mutex;
-    int state;
-    char* hdr;
-    char* buffer;
-    short length;   // int causes errors in converting 2 char bytes to integer
-    int bytes;
-    //char* ans;
-    //QString answer;
-    bool muted;
-    bool amSlave;
-    long long lastFreq;
-    int lastMode;
-    int lastSlave;
-    long serverver;
-    bool initialTxAllowedState;
+    QString      host;
+    QTcpSocket  *tcpSocket;
+    QMutex       mutex;
+    int          port;
+    int          state;
+    char        *hdr;
+    char        *buffer;
+    short        length;   // int causes errors in converting 2 char bytes to integer
+    int          bytes;
+    bool         muted;
+    bool         amSlave;
+    long long    lastFreq;
+    int          lastMode;
+    int          lastSlave;
+    long         serverver;
+    bool         initialTxAllowedState;
     QQueue<Buffer*> queue;
 };
 

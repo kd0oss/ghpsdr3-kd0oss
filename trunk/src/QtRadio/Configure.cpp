@@ -125,8 +125,6 @@ Configure::Configure() {
     connect(widget.MicOrderComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(slotMicOrderChanged(int)));
     connect(widget.MicSampleRateComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(slotMicSampleRateChanged(int)));
 
-    connect(widget.rtpCheckBox,SIGNAL(toggled(bool)),this,SLOT(slotUseRTP(bool)));
-
     connect(widget.hostComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(slotHostChanged(int)));
     connect(widget.rxSpinBox,SIGNAL(valueChanged(int)),this,SLOT(slotReceiverChanged(int)));
 //    connect(widget.rxDCBlockCheckBox, SIGNAL(clicked(bool)), this, SLOT(slotRxDCBlock(bool)));   //KD0OSS
@@ -236,8 +234,8 @@ void Configure::connected(bool state) {
     widget.sampleRateComboBox->setDisabled(state);
     widget.audioChannelsSpinBox->setDisabled(state);
     if (widget.encodingComboBox->currentIndex() == 2){
-        widget.sampleRateComboBox->setDisabled(TRUE);
-        widget.audioChannelsSpinBox->setDisabled(TRUE);
+        widget.sampleRateComboBox->setDisabled(true);
+        widget.audioChannelsSpinBox->setDisabled(true);
         widget.sampleRateComboBox->setCurrentIndex(0);
         widget.audioChannelsSpinBox->setValue(1);
     }
@@ -294,7 +292,6 @@ void Configure::loadSettings(QSettings* settings) {
     if(settings->contains("byteorder")) widget.byteOrderComboBox->setCurrentIndex(settings->value("byteorder").toInt());
     //    if(settings->contains("mic")) widget.MicComboBox->setCurrentIndex(settings->value("mic").toInt());
     if(settings->contains("micEncoding")) widget.MicEncodingComboBox->setCurrentIndex(settings->value("micEncoding").toInt());
-    if(settings->contains("rtp")) widget.rtpCheckBox->setChecked(settings->value("rtp").toBool());
     widget.spinBox_cwPitch->setValue(settings->value("cwPitch",600).toInt());
     settings->endGroup();
 
@@ -323,7 +320,7 @@ void Configure::loadSettings(QSettings* settings) {
     settings->endGroup();
 
     settings->beginGroup("Leveler"); // KD0OSS
-    if (settings->contains("enabled")) widget.levelerEnabledCheckBox->setChecked(settings->value("enabled",FALSE).toBool());
+    if (settings->contains("enabled")) widget.levelerEnabledCheckBox->setChecked(settings->value("enabled",false).toBool());
     if (settings->contains("maxgain")) widget.levelerMaxGainSpinBox->setValue(settings->value("maxgain").toInt());
     if (settings->contains("attack")) widget.levelerAttackSpinBox->setValue(settings->value("attack").toInt());
     if (settings->contains("decay")) widget.levelerDecaySpinBox->setValue(settings->value("decay").toInt());
@@ -331,7 +328,7 @@ void Configure::loadSettings(QSettings* settings) {
     settings->endGroup();
 
     settings->beginGroup("ALC"); // KD0OSS
-//    if (settings->contains("enabled")) widget.alcEnabledCheckBox->setChecked(settings->value("enabled",FALSE).toBool());
+//    if (settings->contains("enabled")) widget.alcEnabledCheckBox->setChecked(settings->value("enabled",false).toBool());
     if (settings->contains("attack")) widget.alcAttackSpinBox->setValue(settings->value("attack").toInt());
     if (settings->contains("decay")) widget.alcDecaySpinBox->setValue(settings->value("decay").toInt());
     if (settings->contains("hang")) widget.alcHangSpinBox->setValue(settings->value("hang").toInt());
@@ -346,13 +343,13 @@ void Configure::loadSettings(QSettings* settings) {
     settings->endGroup();
 
     settings->beginGroup("RXDCBlock"); // KD0OSS
-//    if (settings->contains("rxDCBlock")) widget.rxDCBlockCheckBox->setChecked(settings->value("rxDCBlock",FALSE).toBool());
+//    if (settings->contains("rxDCBlock")) widget.rxDCBlockCheckBox->setChecked(settings->value("rxDCBlock",false).toBool());
 //    if (settings->contains("rxDCBlockGain")) widget.rxDCBlkGainSpinBox->setValue(settings->value("rxDCBlockGain",0).toInt());
     settings->endGroup();
 
     settings->beginGroup("TxSettings");
-    widget.allowTx->setChecked(settings->value("allowTx",FALSE).toBool());
-//    widget.txDCBlockCheckBox->setChecked(settings->value("txDCBlock",FALSE).toBool());  //KD0OSS
+    widget.allowTx->setChecked(settings->value("allowTx",false).toBool());
+//    widget.txDCBlockCheckBox->setChecked(settings->value("txDCBlock",false).toBool());  //KD0OSS
     widget.pttKeyEdit->setText(settings->value("pttKeyText", "None").toString());
     pttKeyId = settings->value("pttKeyId", 0).toUInt();
     settings->endGroup();
@@ -363,7 +360,7 @@ void Configure::loadSettings(QSettings* settings) {
 //    settings->endGroup();
 
 //    settings->beginGroup("RxIQimage");
-//    widget.RxIQcheckBox->setChecked(settings->value("RxIQon/off",TRUE).toBool());
+//    widget.RxIQcheckBox->setChecked(settings->value("RxIQon/off",true).toBool());
 //    widget.RxIQspinBox->setValue(settings->value("RxIQmu",25).toInt());
 //    widget.rxIQPhaseSpinBox->setValue(settings->value("RxIQPhaseCorrect",0).toInt());  //KD0OSS
 //    widget.rxIQGainSpinBox->setValue(settings->value("RxIQGainCorrect",0).toInt());  //KD0OSS
@@ -423,7 +420,6 @@ void Configure::saveSettings(QSettings* settings) {
     settings->setValue("byteorder",widget.byteOrderComboBox->currentIndex());
     settings->setValue("mic",widget.MicComboBox->currentIndex());
     settings->setValue("micEncoding",widget.MicEncodingComboBox->currentIndex());
-    settings->setValue("rtp",widget.rtpCheckBox->checkState());
     settings->setValue("cwPitch",widget.spinBox_cwPitch->value());
     settings->endGroup();
     settings->beginGroup("NR");
@@ -793,10 +789,6 @@ int Configure::getEncoding(){
 }
 
 
-bool Configure::getRTP() {
-    return widget.rtpCheckBox->checkState();
-}
-
 void Configure::setSpectrumLow(int low) {
     widget.spectrumLowSpinBox->setValue(low);
 }
@@ -940,12 +932,12 @@ void Configure::on_encodingComboBox_currentIndexChanged(int index)
 {
     qDebug() << "audio_encoding changed to :  " << index;
     if (index == 2){
-        widget.audioChannelsSpinBox->setDisabled(TRUE);
-        widget.sampleRateComboBox->setDisabled(TRUE);
+        widget.audioChannelsSpinBox->setDisabled(true);
+        widget.sampleRateComboBox->setDisabled(true);
     }
     else {
-        widget.audioChannelsSpinBox->setDisabled(FALSE);
-        widget.sampleRateComboBox->setDisabled(FALSE);
+        widget.audioChannelsSpinBox->setDisabled(false);
+        widget.sampleRateComboBox->setDisabled(false);
     }
     emit encodingChanged(index);
 }

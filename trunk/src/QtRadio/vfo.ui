@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>575</width>
+    <width>595</width>
     <height>115</height>
    </rect>
   </property>
@@ -25,7 +25,7 @@
   <widget class="QPushButton" name="bandBtn_02">
    <property name="geometry">
     <rect>
-     <x>519</x>
+     <x>540</x>
      <y>7</y>
      <width>51</width>
      <height>25</height>
@@ -50,7 +50,7 @@
   <widget class="QToolButton" name="toolBtnUp">
    <property name="geometry">
     <rect>
-     <x>265</x>
+     <x>282</x>
      <y>8</y>
      <width>24</width>
      <height>38</height>
@@ -77,7 +77,7 @@
   <widget class="QPushButton" name="bandBtn_10">
    <property name="geometry">
     <rect>
-     <x>468</x>
+     <x>489</x>
      <y>85</y>
      <width>51</width>
      <height>25</height>
@@ -102,7 +102,7 @@
   <widget class="QPushButton" name="bandBtn_01">
    <property name="geometry">
     <rect>
-     <x>468</x>
+     <x>489</x>
      <y>7</y>
      <width>51</width>
      <height>25</height>
@@ -127,7 +127,7 @@
   <widget class="QPushButton" name="pBtnBtoA">
    <property name="geometry">
     <rect>
-     <x>353</x>
+     <x>370</x>
      <y>7</y>
      <width>55</width>
      <height>25</height>
@@ -205,7 +205,7 @@
   <widget class="QPushButton" name="bandBtn_08">
    <property name="geometry">
     <rect>
-     <x>519</x>
+     <x>540</x>
      <y>59</y>
      <width>51</width>
      <height>25</height>
@@ -230,7 +230,7 @@
   <widget class="QPushButton" name="bandBtn_09">
    <property name="geometry">
     <rect>
-     <x>416</x>
+     <x>437</x>
      <y>85</y>
      <width>51</width>
      <height>25</height>
@@ -255,7 +255,7 @@
   <widget class="Line" name="line_2">
    <property name="geometry">
     <rect>
-     <x>411</x>
+     <x>430</x>
      <y>2</y>
      <width>5</width>
      <height>112</height>
@@ -271,7 +271,7 @@
   <widget class="QToolButton" name="toolBtnDn">
    <property name="geometry">
     <rect>
-     <x>265</x>
+     <x>282</x>
      <y>47</y>
      <width>24</width>
      <height>38</height>
@@ -295,7 +295,7 @@
   <widget class="QPushButton" name="pBtnAtoB">
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>317</x>
      <y>7</y>
      <width>52</width>
      <height>25</height>
@@ -314,7 +314,7 @@
   <widget class="QPushButton" name="bandBtn_00">
    <property name="geometry">
     <rect>
-     <x>416</x>
+     <x>437</x>
      <y>7</y>
      <width>51</width>
      <height>25</height>
@@ -361,7 +361,7 @@
   <widget class="QPushButton" name="pBtnScanDn">
    <property name="geometry">
     <rect>
-     <x>353</x>
+     <x>370</x>
      <y>33</y>
      <width>28</width>
      <height>25</height>
@@ -383,7 +383,7 @@
   <widget class="QPushButton" name="pBtnExch">
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>317</x>
      <y>33</y>
      <width>51</width>
      <height>25</height>
@@ -466,7 +466,7 @@
   <widget class="QPushButton" name="pBtnRIT">
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>317</x>
      <y>59</y>
      <width>52</width>
      <height>25</height>
@@ -493,7 +493,7 @@
     <rect>
      <x>60</x>
      <y>8</y>
-     <width>201</width>
+     <width>220</width>
      <height>76</height>
     </rect>
    </property>
@@ -517,7 +517,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>65</x>
+      <x>73</x>
       <y>14</y>
       <width>10</width>
       <height>21</height>
@@ -537,7 +537,7 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>134</x>
+      <x>149</x>
       <y>8</y>
       <width>10</width>
       <height>30</height>
@@ -560,7 +560,7 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>65</x>
+      <x>73</x>
       <y>49</y>
       <width>10</width>
       <height>21</height>
@@ -583,7 +583,7 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>134</x>
+      <x>149</x>
       <y>44</y>
       <width>10</width>
       <height>30</height>
@@ -605,7 +605,7 @@
      <rect>
       <x>5</x>
       <y>5</y>
-      <width>60</width>
+      <width>67</width>
       <height>30</height>
      </rect>
     </property>
@@ -625,9 +625,9 @@
    <widget class="QLabel" name="lbl_Akhz">
     <property name="geometry">
      <rect>
-      <x>74</x>
+      <x>82</x>
       <y>5</y>
-      <width>62</width>
+      <width>67</width>
       <height>30</height>
      </rect>
     </property>
@@ -652,7 +652,7 @@
    <widget class="QLabel" name="lbl_Ahz">
     <property name="geometry">
      <rect>
-      <x>142</x>
+      <x>160</x>
       <y>9</y>
       <width>53</width>
       <height>30</height>
@@ -678,9 +678,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>74</x>
+      <x>82</x>
       <y>42</y>
-      <width>62</width>
+      <width>67</width>
       <height>30</height>
      </rect>
     </property>
@@ -712,7 +712,7 @@
      <rect>
       <x>5</x>
       <y>42</y>
-      <width>60</width>
+      <width>67</width>
       <height>30</height>
      </rect>
     </property>
@@ -737,7 +737,7 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>142</x>
+      <x>160</x>
       <y>45</y>
       <width>53</width>
       <height>30</height>
@@ -762,7 +762,7 @@
   <widget class="QPushButton" name="bandBtn_07">
    <property name="geometry">
     <rect>
-     <x>468</x>
+     <x>489</x>
      <y>59</y>
      <width>51</width>
      <height>25</height>
@@ -787,7 +787,7 @@
   <widget class="QPushButton" name="bandBtn_04">
    <property name="geometry">
     <rect>
-     <x>468</x>
+     <x>489</x>
      <y>33</y>
      <width>51</width>
      <height>25</height>
@@ -812,7 +812,7 @@
   <widget class="QPushButton" name="pBtnScanUp">
    <property name="geometry">
     <rect>
-     <x>380</x>
+     <x>397</x>
      <y>33</y>
      <width>28</width>
      <height>25</height>
@@ -859,7 +859,7 @@
   <widget class="QPushButton" name="bandBtn_03">
    <property name="geometry">
     <rect>
-     <x>416</x>
+     <x>437</x>
      <y>33</y>
      <width>51</width>
      <height>25</height>
@@ -884,7 +884,7 @@
   <widget class="QPushButton" name="bandBtn_05">
    <property name="geometry">
     <rect>
-     <x>519</x>
+     <x>540</x>
      <y>33</y>
      <width>51</width>
      <height>25</height>
@@ -909,7 +909,7 @@
   <widget class="QPushButton" name="bandBtn_06">
    <property name="geometry">
     <rect>
-     <x>416</x>
+     <x>437</x>
      <y>59</y>
      <width>51</width>
      <height>25</height>
@@ -934,7 +934,7 @@
   <widget class="QPushButton" name="bandBtn_12">
    <property name="geometry">
     <rect>
-     <x>353</x>
+     <x>370</x>
      <y>59</y>
      <width>55</width>
      <height>25</height>
@@ -959,7 +959,7 @@
   <widget class="QPushButton" name="bandBtn_11">
    <property name="geometry">
     <rect>
-     <x>519</x>
+     <x>540</x>
      <y>85</y>
      <width>51</width>
      <height>25</height>
@@ -984,7 +984,7 @@
   <widget class="Line" name="line">
    <property name="geometry">
     <rect>
-     <x>293</x>
+     <x>310</x>
      <y>2</y>
      <width>5</width>
      <height>83</height>
@@ -1000,7 +1000,7 @@
   <widget class="Line" name="m6">
    <property name="geometry">
     <rect>
-     <x>113</x>
+     <x>119</x>
      <y>82</y>
      <width>5</width>
      <height>5</height>
@@ -1428,7 +1428,7 @@
   <widget class="Line" name="m5">
    <property name="geometry">
     <rect>
-     <x>148</x>
+     <x>151</x>
      <y>82</y>
      <width>5</width>
      <height>5</height>
@@ -1856,7 +1856,7 @@
   <widget class="Line" name="m4">
    <property name="geometry">
     <rect>
-     <x>167</x>
+     <x>174</x>
      <y>82</y>
      <width>5</width>
      <height>5</height>
@@ -2284,7 +2284,7 @@
   <widget class="Line" name="m3">
    <property name="geometry">
     <rect>
-     <x>185</x>
+     <x>196</x>
      <y>82</y>
      <width>5</width>
      <height>5</height>
@@ -2712,7 +2712,7 @@
   <widget class="Line" name="m2">
    <property name="geometry">
     <rect>
-     <x>217</x>
+     <x>227</x>
      <y>82</y>
      <width>5</width>
      <height>5</height>
@@ -3140,7 +3140,7 @@
   <widget class="Line" name="m1">
    <property name="geometry">
     <rect>
-     <x>231</x>
+     <x>245</x>
      <y>82</y>
      <width>5</width>
      <height>5</height>
@@ -3568,7 +3568,7 @@
   <widget class="Line" name="m0">
    <property name="geometry">
     <rect>
-     <x>245</x>
+     <x>260</x>
      <y>82</y>
      <width>5</width>
      <height>5</height>

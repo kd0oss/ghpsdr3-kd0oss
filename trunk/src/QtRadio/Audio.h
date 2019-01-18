@@ -40,8 +40,6 @@
 #include <QMutex>
 #include <samplerate.h>
 #include <QThread>
-#include <ortp/rtp.h>
-#include <ortp/rtpsession.h>
 #include "G711A.h"
 #include "cusdr_queue.h"
 
@@ -74,17 +72,11 @@ public slots:
     void set_decoded_buffer(QHQueue<qint16>* pBuffer);
     void set_audio_byte_order(QAudioFormat::Endian byte_order);
     void set_audio_encoding(int encoding);
-    void set_useRTP(bool use);
-    void set_rtp_connected(bool connected);
-    void set_rtpSession(RtpSession* session);
 private:
     quint32 recv_ts;
     QHQueue <qint16> * pdecoded_buffer;
     QAudioFormat::Endian audio_byte_order;
     int audio_encoding;
-    bool useRTP;
-    bool rtp_connected;
-    RtpSession* rtpSession;
     G711A g711a;
     QHQueue<qint16> queue;
 signals:
@@ -131,9 +123,6 @@ public:
     QHQueue <qint16> decoded_buffer;
     QAudioFormat::Endian audio_byte_order;
     int audio_encoding;
-    bool useRTP;
-    bool rtp_connected;
-    RtpSession* rtpSession;
 signals:
     void audio_processing_process_audio(char* header,char* buffer,int length);
 public slots:
@@ -144,10 +133,6 @@ public slots:
     void clear_decoded_buffer(void);
     void get_audio_device(QAudioDeviceInfo * device);
     void set_audio_encoding(int enc);
-    void set_RTP(bool use);
-    void rtp_set_connected(void);
-    void rtp_set_disconnected(void);
-    void rtp_set_rtpSession(RtpSession*);
 private:
     QAudioFormat     audio_format;
     QAudioOutput*    audio_output;

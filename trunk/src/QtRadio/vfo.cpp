@@ -36,9 +36,7 @@
 //#include "Band.h"
 //#include "UI.h"
 
-vfo::vfo(QWidget *parent) :
-    QFrame(parent),
-    ui(new Ui::vfo)
+vfo::vfo(QWidget *parent) : QFrame(parent), ui(new Ui::vfo)
 {
     ui->setupUi(this);
     vfohotstep = 100;

@@ -47,16 +47,6 @@
 #include "BandLimit.h"
 #include "Mode.h"
 #include "Filters.h"
-#include "CWLFilters.h"
-#include "CWUFilters.h"
-#include "LSBFilters.h"
-#include "USBFilters.h"
-#include "DSBFilters.h"
-#include "AMFilters.h"
-#include "SAMFilters.h"
-#include "FMNFilters.h"
-#include "DIGLFilters.h"
-#include "DIGUFilters.h"
 #include "Bandscope.h"
 #include "BookmarkDialog.h"
 #include "Bookmark.h"
@@ -70,8 +60,7 @@
 #include "rigctl.h"
 #include "ctl.h"
 #include "G711A.h"
-#include "RTP.h"
-#include "hardware.h"
+#include "hermesframe.h"
 #include "powermate.h"
 #include "EqualizerDialog.h"
 
@@ -89,15 +78,16 @@
 
 class UI : public QMainWindow {
     Q_OBJECT
+
 public:
     UI(const QString server = QString(""));
     virtual ~UI();
+    void closeEvent(QCloseEvent* event);
+    void keyPressEvent(QKeyEvent * event);
+    void keyReleaseEvent(QKeyEvent * event);
     void loadSettings();
     void saveSettings();
-    void closeEvent(QCloseEvent* event);
-    void keyPressEvent(QKeyEvent * event); // KD0OSS
-    void keyReleaseEvent(QKeyEvent * event); // KD0OSS
-    void sendCommand(QString command);
+   // void sendCommand(QString command);
     long long rigctlGetFreq();
     QString rigctlGetMode();
     QString rigctlGetFilter();
@@ -108,25 +98,21 @@ public:
     void rigctlSetMode(int newmode);
     void rigctlSetFilter(int newfilter);
     void rigSetPTT(int enabled);
-    void setHwDlg(DlgHardware *);
-    DlgHardware * getHwDlg() { return pHwDlg; }
-    void rmHwDlg();
     Connection connection;
 
 signals:
     void initialize_audio(int length);
     void select_audio(QAudioDeviceInfo info,int rate,int channels,QAudioFormat::Endian byteOrder);
     void process_audio(char* header,char* buffer,int length);
-    void rtp_send(unsigned char* buffer, int length);
     void HideTX(bool cantx);
 
 public slots:
     void getMeterValue(int m, int s);
 
-    bool newDspServerCheck(void); // KD0OSS
+    bool newDspServerCheck(void);
 
     void actionConfigure();
-    void actionEqualizer(); // KD0OSS
+    void actionEqualizer();
     void actionAbout();
     void actionConnect();
     void actionConnectNow(QString IP);
@@ -193,7 +179,7 @@ public slots:
 
     void actionPolyphase();
 
-    void actionFixed(); //KD0OSS
+    void actionFixed();
     void actionSlow();
     void actionMedium();
     void actionFast();
@@ -210,7 +196,7 @@ public slots:
     void modeChanged(int previousMode,int newMode);
     void filtersChanged(FiltersBase* previousFilters,FiltersBase* newFilters);
     void filterChanged(int previousFilter,int newFilter);
-    void variableFilter(int low, int high); // KD0OSS
+    void variableFilter(int low, int high);
     void frequencyChanged(long long frequency);
 
     void updateSpectrum();
@@ -221,8 +207,6 @@ public slots:
 
     void micDeviceChanged(QAudioDeviceInfo info,int rate,int channels,QAudioFormat::Endian byteOrder);
     void micSendAudio(QQueue<qint16>*);
-
-    void setRTP(bool state);
 
     void setSubRxGain(int gain);
 
@@ -239,34 +223,34 @@ public slots:
     void hostChanged(QString host);
     void receiverChanged(int rx);
 
-    void agcSlopeChanged(int); //KD0OSS
-    void agcMaxGainChanged(int); //KD0OSS
-    void agcAttackChanged(int); //KD0OSS
-    void agcDecayChanged(int); //KD0OSS
-    void agcHangChanged(int); //KD0OSS
-    void agcFixedGainChanged(int); //KD0OSS
-    void agcHangThreshChanged(int); //KD0OSS
-    void levelerStateChanged(int); //KD0OSS
-    void levelerMaxGainChanged(int); //KD0OSS
-    void levelerAttackChanged(int); //KD0OSS
-    void levelerDecayChanged(int); //KD0OSS
-    void levelerHangChanged(int); //KD0OSS
-    void alcStateChanged(int); //KD0OSS
-    void alcAttackChanged(int); //KD0OSS
-    void alcDecayChanged(int); //KD0OSS
-    void alcHangChanged(int); //KD0OSS
+    void agcSlopeChanged(int);
+    void agcMaxGainChanged(int);
+    void agcAttackChanged(int);
+    void agcDecayChanged(int);
+    void agcHangChanged(int);
+    void agcFixedGainChanged(int);
+    void agcHangThreshChanged(int);
+    void levelerStateChanged(int);
+    void levelerMaxGainChanged(int);
+    void levelerAttackChanged(int);
+    void levelerDecayChanged(int);
+    void levelerHangChanged(int);
+    void alcStateChanged(int);
+    void alcAttackChanged(int);
+    void alcDecayChanged(int);
+    void alcHangChanged(int);
 
-    void AGCTLevelChanged(int level); //KD0OSS
-    void enableRxEq(bool); // KD0OSS
-    void enableTxEq(bool); // KD0OSS
+    void AGCTLevelChanged(int level);
+    void enableRxEq(bool);
+    void enableTxEq(bool);
 
     void nrValuesChanged(int,int,double,double);
     void anfValuesChanged(int,int,double,double);
     void nbThresholdChanged(double);
     void sdromThresholdChanged(double);
-    void windowTypeChanged(int); //KD0OSS
-    void statusMessage(QString); //KD0OSS
-    void removeNotchFilter(void); //KD0OSS
+    void windowTypeChanged(int);
+    void statusMessage(QString);
+    void removeNotchFilter(void);
 
     void actionBookmark();
     void addBookmark();
@@ -286,7 +270,6 @@ public slots:
     void pwrSlider_valueChanged(double pwr);
     void tunePwrSlider_valueChanged(double pwr);
     void printStatusBar(QString message);
- //   void setRemote(char* host,int port);
     void slaveSetMode(int newmode);
     void slaveSetFilter(int l, int r);
     void slaveSetZoom(int z);
@@ -294,12 +277,9 @@ public slots:
     void setChkTX(bool chk);
     void setservername(QString sname);
     void setCanTX(bool tx);
-    void setProtocol3(bool p);
     void closeServers ();
     void cwPitchChanged(int cwPitch);
     void resetbandedges(double offset);
-
-    void hardware (QString);
 
 signals:
     void subRxStateChanged(bool state);
@@ -311,53 +291,54 @@ protected:
 
 private slots:
     void on_zoomSpectrumSlider_sliderMoved(int position);
-    void setSampleZoom(bool);  // KD0OSS
-    void addNotchFilter(void);   // KD0OSS
-    void setAudioMuted(bool); // KD0OSS
-    void audioGainChanged(void); // KD0OSS
+    void setSampleZoom(bool);
+    void addNotchFilter(void);
+    void setAudioMuted(bool);
+    void audioGainChanged(void);
+    void hardwareSet(QString);
 
 private:
     void printWindowTitle(QString message);
-    QLabel modeInfo;
     void setSubRxPan();
     void actionGain(int g);
     void setGain(bool state);
     void initRigCtl();
-    void setPwsMode(int mode); //KD0OSS
-    RigCtlServer *rigCtl;
-    QString getversionstring();
+    void setPwsMode(int mode);
     void appendBookmark(Bookmark* bookmark);
-
     QString stringFrequency(long long frequency);
+    QString getversionstring();
+
+    QLabel modeInfo;
+    RigCtlServer *rigCtl;
+    QString hardwareType;
 
     Ui::UI widget;
     Audio* audio;
+    AudioInput* audioinput;
     QAudioDeviceInfo audio_device;
-    int audio_sample_rate;
-    int audio_channels;
-    int audio_buffers;
     QAudioFormat::Endian audio_byte_order;
     QMutex audio_mutex;
     char* first_audio_buffer;
     char* first_audio_header;
+    int audio_sample_rate;
+    int audio_channels;
+    int audio_buffers;
     int gain;
-    int pwsmode; //KD0OSS
+    int pwsmode;
     int subRxGain;
     bool subRx;
-    AudioInput* audioinput;
     int mic_buffer_count;       // counter of mic_buffer, to encode if reaches CODEC2_SAMPLE_PER_FRAME
     int mic_frame_count;        // counter of mic_buffer, to encode enough frames before sending
-
 
     qint16 mic_buffer[MIC_BUFFER_SIZE];
     unsigned char mic_encoded_buffer[MIC_BUFFER_SIZE];
 
-    unsigned char *rtp_send_buffer;
     long long subRxFrequency;
     bool connection_valid;
 
     Band band;
     Mode mode;
+
     Filters filters;
     CWLFilters cwlFilters;
     CWUFilters cwuFilters;
@@ -373,29 +354,24 @@ private:
     Xvtr xvtr;
 
     int agc;
-
     int cwPitch;
-
     long long frequency;
-
+    int sampleRate;
     int fps;
     QTimer* spectrumTimer;
 
     About about;
     Configure configure;
     Servers *servers;
-    int sampleRate;
-
-    DlgHardware *pHwDlg;
 
     Bandscope* bandscope;
 
-    EqualizerDialog *equalizer; // KD0OSS
+    EqualizerDialog *equalizer;
 
-    int sampleZoomLevel; // KD0OSS
-    int viewZoomLevel; // KD0OSS
+    int sampleZoomLevel;
+    int viewZoomLevel;
 
-    int notchFilterIndex; // KD0OSS
+    int notchFilterIndex;
 
     BookmarkDialog bookmarkDialog;
     BookmarksDialog* bookmarksDialog;
@@ -416,9 +392,6 @@ private:
     bool modeFlag; //Signals mode is changed from main menu
 
     G711A g711a;
-    RTP *rtp;
-    QThread *rtp_thread;
-    bool useRTP;
 
     int tuning;
     int infotick;
@@ -429,9 +402,8 @@ private:
     QString servername;
     bool canTX;
     bool chkTX;
-    bool txNow; // KD0OSS
+    bool txNow;
     double loffset;
-    bool protocol3;
 };
 
 #endif	/* _UI_H */

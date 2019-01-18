@@ -41,7 +41,6 @@
 * Foundation, Inc., 59 Temple Pl
 */
 
-#include <ortp/rtp.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -53,9 +52,6 @@ Audio_playback::Audio_playback() : QIODevice()
     recv_ts = 0;
     audio_byte_order = QAudioFormat::LittleEndian;
     audio_encoding = 0;
-    rtpSession = 0;
-    rtp_connected = false;
-    useRTP = false;
     pdecoded_buffer = &queue;
 }
 
@@ -95,100 +91,28 @@ void Audio_playback::set_audio_encoding(int encoding)
 }
 
 
-void Audio_playback::set_rtpSession(RtpSession *session)
-{
-    rtpSession = session;
-}
-
-
-void Audio_playback::set_rtp_connected(bool connected)
-{
-    rtp_connected = connected;
-}
-
-void Audio_playback::set_useRTP(bool use)
-{
-    useRTP = use;
-}
-
-
 qint64 Audio_playback::readData(char *data, qint64 maxlen)
 {
     qint64 bytes_read;
     qint16 v;
     qint64 bytes_to_read = maxlen > 2000 ? 2000: maxlen;
-    //qint64 bytes_to_read = maxlen;
-    int has_more;
 
-    if (useRTP && rtp_connected)
+    while ((!pdecoded_buffer->isEmpty()) && (bytes_read < bytes_to_read))
     {
-        int i;
-        short v;
-        int length;
-
-        uint8_t* buffer;
-
-        // aLaw encoded from RTP, but readData is reading in bytes (each sample 2 bytes for PCM)
-        buffer = (uint8_t*)malloc(bytes_to_read/2);
-
-        length=rtp_session_recv_with_ts(rtpSession,buffer,bytes_to_read/2,recv_ts,&has_more);
-        if (length>0)
+        v = pdecoded_buffer->dequeue();
+        switch (audio_byte_order)
         {
-            recv_ts += length;
-            if (audio_encoding == 0)
-            {
-#pragma omp parallel for schedule(static) ordered
-                for (i=0;i<length;i++)
-                {
-                    v=g711a.decode(buffer[i]);
-#pragma omp ordered
-                    pdecoded_buffer->enqueue(v);
-                }
-            }
-            else
-            {
-                qDebug() << "Audio: rtp_audio only support aLaw";
-            }
-        }
-        free(buffer);
-
-        if (length <= 0)
-        {                  // probably not connected or late arrival.  Send silence.
-            recv_ts+=bytes_to_read/2;
-            memset(data, 0, bytes_to_read);
-            bytes_read = bytes_to_read;
-            return bytes_read;
+        case QAudioFormat::LittleEndian:
+            data[bytes_read++]=(char)(v&0xFF);
+            data[bytes_read++]=(char)((v>>8)&0xFF);
+            break;
+        case QAudioFormat::BigEndian:
+            data[bytes_read++]=(char)((v>>8)&0xFF);
+            data[bytes_read++]=(char)(v&0xFF);
+            break;
         }
     }
-
-    // note both TCP and RTP audio enqueue PCM data in decoded_buffer
-    bytes_read = 0;
-
-    if (pdecoded_buffer->isEmpty())
-    {
-        // probably not connected or late arrival of packets.  Send silence.
-        memset(data, 0, bytes_to_read);
-        bytes_read = bytes_to_read;
-    }
-    else
-    {
-        while ((!pdecoded_buffer->isEmpty()) && (bytes_read < bytes_to_read))
-        {
-            v = pdecoded_buffer->dequeue();
-            switch (audio_byte_order)
-            {
-            case QAudioFormat::LittleEndian:
-                data[bytes_read++]=(char)(v&0xFF);
-                data[bytes_read++]=(char)((v>>8)&0xFF);
-                break;
-            case QAudioFormat::BigEndian:
-                data[bytes_read++]=(char)((v>>8)&0xFF);
-                data[bytes_read++]=(char)(v&0xFF);
-                break;
-            }
-        }
-        while (bytes_read < bytes_to_read) data[bytes_read++] = 0;
-    }
+    while (bytes_read < bytes_to_read) data[bytes_read++] = 0;
 
     return bytes_read;
 }
@@ -210,8 +134,6 @@ Audio::Audio()
     audio_encoding = 0;
     audio_channels=1;
     audio_byte_order=QAudioFormat::LittleEndian;
-    rtp_connected = false;
-    useRTP = false;
 
     qDebug() << "Audio: LittleEndian=" << QAudioFormat::LittleEndian << " BigEndian=" << QAudioFormat::BigEndian;
 
@@ -364,9 +286,6 @@ void Audio::get_audio_devices(QComboBox* comboBox)
         audio_out->set_audio_byte_order(audio_format.byteOrder());
         audio_out->set_audio_encoding(audio_encoding);
         audio_out->set_decoded_buffer(&decoded_buffer);
-        audio_out->set_rtpSession(0);
-        audio_out->set_rtp_connected(false);
-        audio_out->set_useRTP(false);
         audio_out->start();
         audio_output->start(audio_out);
 
@@ -461,9 +380,6 @@ void Audio::select_audio(QAudioDeviceInfo info,int rate,int channels,QAudioForma
         audio_out->set_audio_byte_order(audio_format.byteOrder());
         audio_out->set_audio_encoding(audio_encoding);
         audio_out->set_decoded_buffer(&decoded_buffer);
-        audio_out->set_rtpSession(0);
-        audio_out->set_rtp_connected(false);
-        audio_out->set_useRTP(false);
         audio_out->start();
         audio_output->start(audio_out);
 
@@ -547,43 +463,6 @@ int Audio::get_audio_encoding()
 void Audio::process_audio(char* header, char* buffer, int length)
 {
     emit audio_processing_process_audio(header,buffer,length);
-}
-
-
-void Audio::set_RTP(bool use)
-{
-    useRTP = use;
-    audio_out->set_useRTP(use);
-}
-
-
-void Audio::rtp_set_connected(void)
-{
-    qDebug() << "Audio::rtp_set_connected";
-#if 0
-    /*
-     *  send first packet in order to help to establish session
-     */
-    unsigned char fake [] = "BBBBBBBBBBBBBBBB";
-    rtp_session_send_with_ts(rtpSession,(uint8_t*)fake,sizeof(fake),1);
-#endif
-    rtp_connected = true;
-    audio_out->set_rtp_connected(true);
-}
-
-
-void Audio::rtp_set_disconnected(void)
-{
-    rtp_connected = false;
-    audio_out->set_rtp_connected(false);
-}
-
-
-void Audio::rtp_set_rtpSession(RtpSession* session)
-{
-    qDebug() << "Audio::rtp_set_rtpSession";
-    rtpSession = session;
-    audio_out->set_rtpSession(session);
 }
 
 

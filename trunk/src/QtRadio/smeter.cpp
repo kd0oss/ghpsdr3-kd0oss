@@ -9,7 +9,7 @@ sMeter::sMeter(QWidget* parent) : QFrame(parent)
     sMeterSub=new Meter("Sub Rx", SIGMETER);
     meter_dbm = -121;
     sub_meter_dbm = -121;
-    subRx = FALSE;
+    subRx = false;
 }
 
 sMeter::~sMeter()

@@ -52,6 +52,9 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
     case QtCriticalMsg:
          fprintf(stderr, "Critical: %s\n", message.toLocal8Bit().constData());
          break;
+    case QtInfoMsg:
+         fprintf(stderr, "Info: %s\n", message.toLocal8Bit().constData());
+         break;
     case QtFatalMsg:
          fprintf(stderr, "Fatal: %s\n", message.toLocal8Bit().constData());
          abort();

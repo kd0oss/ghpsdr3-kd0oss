@@ -28,10 +28,49 @@
 
 #include <QObject>
 #include <QDebug>
-
-#include "FiltersBase.h"
+#include <Filters.h>
 
 #define MAX_FILTERS 11
+
+class Filter : QObject {
+    Q_OBJECT
+public:
+    Filter();
+    Filter(QString t,int l,int h);
+    virtual ~Filter();
+    void init(QString t,int l,int h);
+    void setText(QString t);
+    void setLow(int l);
+    void setHigh(int h);
+    QString getText();
+    int getLow();
+    int getHigh();
+private:
+    QString text;
+    int low;
+    int high;
+};
+
+class FiltersBase : public QObject {
+    Q_OBJECT
+public:
+    FiltersBase();
+    FiltersBase(const FiltersBase& orig);
+    virtual ~FiltersBase();
+    QString getText(int f);
+    int getSelected();
+    void selectFilter(int f);
+    QString getText();
+    int getLow();
+    int getHigh();
+
+
+    Filter filters[MAX_FILTERS];
+private:
+    int currentFilter;
+
+};
+
 
 class Filters : public QObject {
     Q_OBJECT
@@ -54,6 +93,86 @@ private:
     FiltersBase* currentFilters;
     
 };
+
+
+class AMFilters : public FiltersBase {
+public:
+    AMFilters();
+    virtual ~AMFilters();
+private:
+};
+
+class CWLFilters : public FiltersBase {
+public:
+    CWLFilters();
+    virtual ~CWLFilters();
+private:
+};
+
+class CWUFilters : public FiltersBase {
+public:
+    CWUFilters();
+    virtual ~CWUFilters();
+private:
+
+};
+
+class DIGLFilters : public FiltersBase {
+public:
+    DIGLFilters();
+    virtual ~DIGLFilters();
+private:
+
+};
+
+class DIGUFilters : public FiltersBase {
+public:
+    DIGUFilters();
+    virtual ~DIGUFilters();
+private:
+
+};
+
+class DSBFilters : public FiltersBase {
+public:
+    DSBFilters();
+    virtual ~DSBFilters();
+private:
+
+};
+
+class FMNFilters : public FiltersBase {
+public:
+    FMNFilters();
+    virtual ~FMNFilters();
+private:
+
+};
+
+class LSBFilters : public FiltersBase {
+public:
+    LSBFilters();
+    virtual ~LSBFilters();
+private:
+
+};
+
+class USBFilters : public FiltersBase {
+public:
+    USBFilters();
+    virtual ~USBFilters();
+private:
+
+};
+
+class SAMFilters : public FiltersBase {
+public:
+    SAMFilters();
+    virtual ~SAMFilters();
+private:
+
+};
+
 
 #endif	/* FILTERS_H */
 
