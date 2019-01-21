@@ -71,6 +71,7 @@ UI::UI(const QString server)
     sampleZoomLevel = 0;
     viewZoomLevel = 0;
     hardwareType.clear();
+    hww = NULL;
 
     audio = new Audio;
     configure.initAudioDevices(audio);
@@ -106,6 +107,7 @@ UI::UI(const QString server)
     connect(&connection, SIGNAL(setChkTX(bool)), this, SLOT(setChkTX(bool)));
     connect(&connection, SIGNAL(resetbandedges(double)), this, SLOT(resetbandedges(double)));
     connect(&connection, SIGNAL(setFPS()), this, SLOT(setFPS()));
+    connect(&connection, SIGNAL(hardware(QString)), this, SLOT(hardwareSet(QString)));
 
     connect(audioinput, SIGNAL(mic_send_audio(QQueue<qint16>*)), this, SLOT(micSendAudio(QQueue<qint16>*)));
 
@@ -329,12 +331,6 @@ UI::UI(const QString server)
 
 UI::~UI()
 {
-    if (hardwareType == "hermes")
-    {
-        HermesFrame *hf = static_cast<HermesFrame*>(widget.radioLayout->widget());
-        widget.radioLayout->removeWidget(hf);
-        hf->deleteLater();
-    }
     connection.disconnect();
     equalizer->deleteLater();
     saveSettings();
@@ -901,29 +897,57 @@ void UI::disconnected(QString message)
     widget.actionSubrx->setDisabled(true);
     widget.actionMuteSubRx->setDisabled(true);
 
+    if (hardwareType != "" && hww != NULL)
+    {
+        widget.radioLayout->removeWidget(hww);
+        hww->deleteLater();
+        hardwareType.clear();
+    }
     configure.connected(false);
 } // end disconnected
 
 
 void UI::updateSpectrum()
 {
-    QString command;
-    command.clear(); QTextStream(&command) << "getSpectrum " << widget.spectrumView->width();
-        //connection.sendCommand(command);
+    QByteArray command;
+    command.append((char)GETSPECTRUM);
+    command.append(QString("%1").arg(widget.spectrumView->width()));
+    connection.sendCommand(command);
 
     if (infotick > 25)
     {
-        //connection.sendCommand("q-master");
-        if (connection.getSlave() == true) //connection.sendCommand("q-info"); // get master freq changes
+        command.clear();
+        command.append((char)QMASTER);
+        connection.sendCommand(command);
+        command.clear();
+        if (connection.getSlave() == true)
+        {
+            command.append((char)QINFO);  // get master freq changes
+            connection.sendCommand(command);
+        }
         infotick = 0;
     }
+
     if (infotick2 == 0)
     { // set to 0 wehen we first connect
-       // if (chkTX) connection.sendCommand("q-cantx#" + configure.thisuser); // can we tx here?
+        if (chkTX)
+        {
+            command.clear();
+            command.append((char)QCANTX);
+            command.append(QString("%1").arg(configure.thisuser)); // can we tx here?
+            connection.sendCommand(command);
+        }
     }
+
     if (infotick2 > 50)
     {
-       // if (chkTX) connection.sendCommand("q-cantx#" + configure.thisuser); // can we tx here?
+        if (chkTX)
+        {
+            command.clear();
+            command.append((char)QCANTX);
+            command.append(QString("%1").arg(configure.thisuser)); // can we tx here?
+            connection.sendCommand(command);
+        }
         infotick2 = 0;
     }
     infotick++;
@@ -1678,11 +1702,11 @@ void UI::actionFilter10()
 
 void UI::filterChanged(int previousFilter,int newFilter)
 {
-    QString command;
+    QByteArray command;
 
     qDebug()<<Q_FUNC_INFO<< ":   1252 previousFilter, newFilter" << previousFilter << ":" << newFilter;
 
-    int low,high;
+    int low, high;
     switch (previousFilter)
     {
     case 0:
@@ -1760,26 +1784,29 @@ void UI::filterChanged(int previousFilter,int newFilter)
     if (previousFilter != 10 && newFilter == 10)
         return;
 
-    if (mode.getMode()==MODE_CWL)
+    if (mode.getMode() == MODE_CWL)
     {
-        low=-cwPitch-filters.getLow();
-        high=-cwPitch+filters.getHigh();
+        low = -cwPitch - filters.getLow();
+        high = -cwPitch + filters.getHigh();
     }
     else
-        if (mode.getMode()==MODE_CWU)
+        if (mode.getMode() == MODE_CWU)
         {
-            low=cwPitch-filters.getLow();
-            high=cwPitch+filters.getHigh();
+            low = cwPitch - filters.getLow();
+            high = cwPitch + filters.getHigh();
         }
         else
         {
-            low=filters.getLow();
-            high=filters.getHigh();
+            low = filters.getLow();
+            high = filters.getHigh();
         }
 
-    command.clear(); QTextStream(&command) << "setFilter " << low << " " << high;
-    //connection.sendCommand(command);
-    widget.spectrumView->setFilter(low,high);
+    command.clear();
+    command.append((char)SETFILTER);
+    command.append(QString("%1 %2").arg(low).arg(high));
+    //QTextStream(&command) << "setFilter " << low << " " << high;
+    connection.sendCommand(command);
+    widget.spectrumView->setFilter(low, high);
     widget.spectrumView->setFilter(filters.getText());
     //    widget.waterfallView->setFilter(low,high);
     band.setFilter(newFilter);
@@ -3277,10 +3304,11 @@ void UI::alcHangChanged(int value)
 
 void UI::hardwareSet(QString hardware)
 {
-    if (hardware == "hermes")
+    if (hardware == "OK Hermes")
     {
         HermesFrame *hf = new HermesFrame(this);
         widget.radioLayout->addWidget(hf);
-        hardwareType = hardware;
+        hww = (QWidget*)hf;
+        hardwareType = "hermes";
     }
 } // end hardwareSet

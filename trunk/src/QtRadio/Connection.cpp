@@ -206,6 +206,7 @@ void Connection::sendCommand(QByteArray command, int size)
   //  qDebug() << "Connection::sendCommand: "<< command.toStdString().c_str();
     for (i=0; i < SEND_BUFFER_SIZE; i++)
         buffer[i] = 0;
+
     if (tcpSocket != NULL && tcpSocket->isValid() && tcpSocket->isWritable())
     {
         mutex.lock();
@@ -247,7 +248,6 @@ void Connection::socketData()
     int     bytesRead=0;
     int     thisRead=0;
     int     version;
-    int     subversion;
     int     header_size=0;
     int     answer_size=0;
     char   *ans;
@@ -268,11 +268,11 @@ void Connection::socketData()
 
     while (bytesRead < toRead)
     {
-        fprintf (stderr, "%d of %d [%d]\n", bytesRead, toRead, state);
+ //       fprintf (stderr, "%d of %d [%d]\n", bytesRead, toRead, state);
         switch (state)
         {
         case READ_HEADER_TYPE:
-            thisRead = tcpSocket->read(&hdr[bytes], 3 - bytes);
+            thisRead = tcpSocket->read(&hdr[bytes], 2 - bytes);
             if (thisRead < 0)
             {
                 fprintf(stderr,"QtRadioII: FATAL: READ_AUDIO_HEADER: error in read: %d\n", thisRead);
@@ -280,7 +280,7 @@ void Connection::socketData()
                 return;
             }
             bytes += thisRead;
-            if (bytes == 3)
+            if (bytes == 2)
             {
                 switch (hdr[0])
                 {
@@ -289,27 +289,7 @@ void Connection::socketData()
                     break;
                 case SPECTRUM_BUFFER:
                     version = hdr[1];
-                    subversion = hdr[2];
-                    switch (version)
-                    {
-                    case 2:
-                        switch (subversion)
-                        {
-                        case 0:
-                            header_size = HEADER_SIZE_2_0;
-                            break;
-                        case 1:
-                            header_size = HEADER_SIZE_2_1;
-                            break;
-                        default:
-                            fprintf(stderr, "QtRadioII: Invalid subversion. Expected %d.%d got %d.%d\n", HEADER_VERSION, HEADER_SUBVERSION, version, subversion);
-                            break;
-                        }
-                        break;
-                    default:
-                        fprintf(stderr, "QtRadioII: Invalid version. Expected %d.%d got %d.%d\n", HEADER_VERSION, HEADER_SUBVERSION, version, subversion);
-                        break;
-                    }
+                    header_size = 16;
                     state = READ_HEADER;
                     break;
                 case BANDSCOPE_BUFFER:
@@ -320,6 +300,7 @@ void Connection::socketData()
                     bytes = 0;
                     answer_size = hdr[1];
                     ans = (char*)malloc(answer_size + 1);
+                    memset(ans, 0, answer_size + 1);
                     break;
                 }
             }
@@ -384,10 +365,10 @@ void Connection::socketData()
             if (bytes == length)
             {
                 version = hdr[1];
-                subversion = hdr[2];
+            //    subversion = hdr[2];
                 queue.enqueue(new Buffer(hdr, buffer));
                 QTimer::singleShot(0, this, SLOT(processBuffer()));
-                hdr = (char*)malloc(HEADER_SIZE_2_1);
+                hdr = (char*)malloc(16);
                 bytes = 0;
                 state = READ_HEADER_TYPE;
             }
@@ -411,9 +392,9 @@ void Connection::socketData()
                 {
                     //"20120107;-rxtx"; YYYYMMDD; text desc
                     answer = ans+1;
-                    QString tmp = (QString)(answer.split(";").at(1));
+                    QString tmp = (QString)(answer.split(";").at(0));
 #if QT_VERSION >= 0x050000
-                    emit setdspversion(tmp.toLong(), (QString)(answer.split(";").at(2)));
+                    emit setdspversion(tmp.toLong(), (QString)(answer.split(";").at(1)));
 #else
                     emit setdspversion(rx.cap(1).toLong(), rx.cap(2).toAscii());
 #endif
@@ -529,9 +510,9 @@ void Connection::socketData()
                                             emit setFPS();
                                         }
                                         else
-                                            if (answer[0] == STARCOMMAND)
+                                            if (ans[0] == STARCOMMAND)
                                             {
-                                                answer = ans+1;
+                                                answer = ans+3;
                                                 qDebug() << "--------------->" << answer;
 
                                                 emit hardware(QString(answer));
@@ -539,7 +520,7 @@ void Connection::socketData()
 
                 //answer.prepend("  Question/Answer ");
                 //emit printStatusBar(answer);
-                qDebug() << "ANSWER bytes " << bytes << " answer " << ans;
+                qDebug() << "ANSWER bytes " << bytes << " answer " << ans+1;
                 free(ans);
                 bytes = 0;
                 state = READ_HEADER_TYPE;

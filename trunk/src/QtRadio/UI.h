@@ -311,6 +311,7 @@ private:
     QLabel modeInfo;
     RigCtlServer *rigCtl;
     QString hardwareType;
+    QWidget *hww;
 
     Ui::UI widget;
     Audio* audio;

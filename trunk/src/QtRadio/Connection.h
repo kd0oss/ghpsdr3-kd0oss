@@ -82,6 +82,7 @@ enum COMMAND_SET {
     SETFPS,
     SETCLIENT,
     SETFREQ,
+    SETPREAMP,
     SETMODE,
     SETFILTER,
     SETENCODING,
@@ -94,7 +95,7 @@ enum COMMAND_SET {
     SETRXBPASSWIN,
     SETTXBPASSWIN,
     SETWINDOW,
-    GETSPECTRIM
+    GETSPECTRUM
 };
 
 class Connection : public QObject {
